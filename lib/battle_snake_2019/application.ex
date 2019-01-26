@@ -8,6 +8,11 @@ defmodule BattleSnake2019.Application do
   def start(_type, _args) do
     # List all child processes to be supervised
     children = [
+      Plug.Cowboy.child_spec(
+        scheme: :http,
+        plug: BattleSnake2019.Web.Router,
+        options: [port: 4001]
+      )
       # Starts a worker by calling: BattleSnake2019.Worker.start_link(arg)
       # {BattleSnake2019.Worker, arg},
     ]

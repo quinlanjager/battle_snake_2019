@@ -11,7 +11,7 @@ defmodule BattleSnake2019.Application do
       Plug.Cowboy.child_spec(
         scheme: :http,
         plug: BattleSnake2019.Web.Router,
-        options: [port: 4001]
+        options: [port: Application.get_env(:battle_snake_2019, :port)]
       )
       # Starts a worker by calling: BattleSnake2019.Worker.start_link(arg)
       # {BattleSnake2019.Worker, arg},

@@ -5,11 +5,7 @@ defmodule BattleSnake2019.Web.Router do
   plug(:match)
   plug(:dispatch)
 
-  get "/" do
-    send_resp(conn, 200, "world")
-  end
+  forward("/api", to: BattleSnake2019.Web.APIRouter)
 
-  match _ do
-    send_resp(conn, 404, "Resource not found")
-  end
+  match(_, do: send_resp(conn, 404, "Resource not found"))
 end

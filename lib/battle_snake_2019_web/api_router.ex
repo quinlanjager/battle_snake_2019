@@ -20,4 +20,12 @@ defmodule BattleSnake2019.Web.APIRouter do
     response_body = encode!(Snake.move())
     send_resp(conn, 200, response_body)
   end
+
+  post "/end" do
+    send_resp(conn, 200, "")
+  end
+
+  post "/ping" do
+    send_resp(conn, 200, "")
+  end
 end

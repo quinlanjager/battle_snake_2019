@@ -24,7 +24,7 @@ defmodule BattleSnake2019.Web.APIRouter do
 
     GameServer.put(:game_server, game_id, body)
 
-    response_body = encode!(Snake.move())
+    response_body = encode!(Snake.move(body))
     send_resp(conn, 200, response_body)
   end
 

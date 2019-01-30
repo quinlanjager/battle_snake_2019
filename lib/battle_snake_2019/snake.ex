@@ -11,7 +11,10 @@ defmodule BattleSnake2019.Snake do
     @valid_moves
   end
 
-  def move do
+  def move(%{} = game) do
+  end
+
+  def move(_) do
     %{"move" => "right"}
   end
 end

@@ -9,7 +9,9 @@ defmodule BattleSnake2019.Field do
       1..height
       |> Enum.map(fn row -> build_row(row, width) end)
       |> List.flatten()
-      |> Enum.reduce(%{}, fn %{x: x, y: y} = tile, soFar -> Map.put(soFar, "#{x}_#{y}", tile) end)
+      |> Enum.reduce(%{}, fn %{"x" => x, "y" => y} = tile, soFar ->
+        Map.put(soFar, "#{x}_#{y}", tile)
+      end)
 
     Map.put_new(game, "field", field)
   end
@@ -25,7 +27,7 @@ defmodule BattleSnake2019.Field do
 
   defp build_row(row, width) do
     1..width
-    |> Enum.map(fn column -> %{x: column, y: row} end)
+    |> Enum.map(fn column -> %{"x" => column, "y" => row} end)
   end
 
   #  process snakes

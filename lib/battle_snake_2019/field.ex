@@ -7,7 +7,9 @@ defmodule BattleSnake2019.Field do
 
     field =
       1..height
-      |> Enum.map(fn _row -> build_row(width) end)
+      |> Enum.map(fn row -> build_row(row, width) end)
+      |> List.flatten()
+      |> Enum.reduce(%{}, fn %{x: x, y: y} = tile, soFar -> Map.put(soFar, "#{x}_#{y}", tile) end)
 
     Map.put_new(game, "field", field)
   end
@@ -21,9 +23,9 @@ defmodule BattleSnake2019.Field do
     process_foods(field, foods) |> process_snakes(snakes)
   end
 
-  defp build_row(width) do
+  defp build_row(row, width) do
     1..width
-    |> Enum.map(fn _column -> %{} end)
+    |> Enum.map(fn column -> %{x: column, y: row} end)
   end
 
   #  process snakes
@@ -67,20 +69,15 @@ defmodule BattleSnake2019.Field do
 
   # add things to field
   defp add_entity_to_field(field, %{"x" => x, "y" => y}, entity, segment_type \\ nil) do
-    # Subtracting 1 because zero index
-    row_index = Kernel.max(y - 1, 0)
-    tile_index = Kernel.max(x - 1, 0)
-
-    row_to_update = Enum.fetch!(field, row_index)
-    tile_to_update = Enum.fetch!(row_to_update, tile_index)
+    coordinate = "#{x}_#{y}"
 
     updated_tile =
-      Map.merge(tile_to_update, %{
-        "entity" => entity,
-        "segment_type" => segment_type
+      Map.fetch!(field, coordinate)
+      |> Map.merge(%{
+        entity: entity,
+        segment_type: segment_type
       })
 
-    updated_row = List.replace_at(row_to_update, tile_index, updated_tile)
-    List.replace_at(field, row_index, updated_row)
+    Map.put(field, coordinate, updated_tile)
   end
 end

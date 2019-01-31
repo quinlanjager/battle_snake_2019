@@ -22,4 +22,12 @@ defmodule BattleSnake2019.Snake do
   def get_snake_name do
     @name
   end
+
+  def get_head_location(%{"body" => body}) do
+    Enum.at(body, 0)
+  end
+
+  def get_tail_location(%{"body" => body}) do
+    List.last(body)
+  end
 end

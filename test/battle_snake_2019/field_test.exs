@@ -37,25 +37,25 @@ defmodule BattleSnake2019.FieldTest do
 
     assert %{
              "1_1" => %{
-               entity: "snake-id-string",
-               segment_type: :tail,
                "x" => 1,
-               "y" => 1
+               "y" => 1,
+               entity: "snake-id-string",
+               segment_type: :tail
              },
              "1_2" => %{
-               entity: "snake-id-string",
-               segment_type: :body,
                "x" => 1,
-               "y" => 2
+               "y" => 2,
+               entity: "snake-id-string",
+               segment_type: :body
              },
              "1_3" => %{
-               entity: "snake-id-string",
-               segment_type: :head,
                "x" => 1,
-               "y" => 3
+               "y" => 3,
+               entity: "snake-id-string",
+               segment_type: :head
              },
              "2_1" => %{"x" => 2, "y" => 1},
-             "2_2" => %{entity: :food, segment_type: nil, "x" => 2, "y" => 2},
+             "2_2" => %{"x" => 2, "y" => 2, entity: :food, segment_type: nil},
              "2_3" => %{"x" => 2, "y" => 3},
              "3_1" => %{"x" => 3, "y" => 1},
              "3_2" => %{"x" => 3, "y" => 2},

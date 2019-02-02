@@ -1,4 +1,7 @@
 defmodule BattleSnake2019.Field do
+  import BattleSnake2019.Nodes
+  @directions [["x", [1, -1]], ["y", [1, -1]]]
+
   def create_field(%{"board" => board} = game) do
     %{
       "height" => height,
@@ -23,6 +26,49 @@ defmodule BattleSnake2019.Field do
     } = board
 
     process_foods(field, foods) |> process_snakes(snakes)
+  end
+
+  def find_nearest_food(field, start) do
+    field_coords = Map.values(field)
+
+    food_locations =
+      Enum.filter(field_coords, fn coords ->
+        Map.get(coords, :entity) == :food
+      end)
+      |> Enum.map(fn %{"x" => x, "y" => y} = food ->
+        x_distance_from_start = x - start["x"]
+        y_distance_from_start = x - start["y"]
+        x_distance_from_start = Kernel.max(x_distance_from_start, x_distance_from_start * -1)
+        y_distance_from_start = Kernel.max(y_distance_from_start, y_distance_from_start * -1)
+        Map.put(food, :distance, x_distance_from_start + y_distance_from_start)
+      end)
+
+    number_of_locations = length(food_locations)
+
+    if number_of_locations > 1,
+      do: Enum.sort_by(food_locations, &(&1.distance <= &2.distance)),
+      else: food_locations
+  end
+
+  def get_adjacent_nodes_and_cost(field, node) do
+    Enum.map(@directions, fn direction ->
+      [coordinate, directions] = direction
+
+      Enum.map(directions, fn dir ->
+        adjacent_node_coords = Map.put(node, coordinate, node[coordinate] + dir)
+        adjacent_node = get_node(field, adjacent_node_coords)
+
+        if is_nil(adjacent_node),
+          do: nil,
+          else: Map.merge(adjacent_node, %{cost: node.cost + 1})
+      end)
+    end)
+    |> List.flatten()
+  end
+
+  def get_node(field, node) do
+    coords = Map.values(field)
+    Enum.find(coords, fn field_node -> is_the_node?(node, field_node) end)
   end
 
   defp build_row(row, width) do

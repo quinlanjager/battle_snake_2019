@@ -1,7 +1,7 @@
 defmodule BattleSnake2019.Web.APIRouterTest do
   use ExUnit.Case
   use Plug.Test
-  alias BattleSnake2019.Snake
+  alias BattleSnake2019.Field.Snake
   alias BattleSnake2019.GameServer
   import Poison
 

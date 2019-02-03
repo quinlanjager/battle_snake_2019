@@ -1,4 +1,4 @@
-defmodule BattleSnake2019.Snake do
+defmodule BattleSnake2019.Field.Snake do
   # your Snake settings
   @color "f707cb"
   @valid_moves ["right", "left", "up", "down"]
@@ -23,11 +23,13 @@ defmodule BattleSnake2019.Snake do
     @name
   end
 
-  def get_head_location(%{"body" => body}) do
-    Enum.at(body, 0)
-  end
+  def get_segment_location(field, snake_id, segment) do
+    field_coords = Map.values(field)
 
-  def get_tail_location(%{"body" => body}) do
-    List.last(body)
+    Enum.find(field_coords, fn node ->
+      entity = Map.get(node, :entity)
+      segment_type = Map.get(node, :segment_type)
+      entity == snake_id and segment_type == segment
+    end)
   end
 end

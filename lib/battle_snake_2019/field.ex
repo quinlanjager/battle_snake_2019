@@ -1,5 +1,5 @@
 defmodule BattleSnake2019.Field do
-  import BattleSnake2019.Nodes
+  import BattleSnake2019.Field.Nodes
   @directions [["x", [1, -1]], ["y", [1, -1]]]
 
   def create_field(%{"board" => board} = game) do
@@ -37,7 +37,7 @@ defmodule BattleSnake2019.Field do
       end)
       |> Enum.map(fn %{"x" => x, "y" => y} = food ->
         x_distance_from_start = x - start["x"]
-        y_distance_from_start = x - start["y"]
+        y_distance_from_start = y - start["y"]
         x_distance_from_start = Kernel.max(x_distance_from_start, x_distance_from_start * -1)
         y_distance_from_start = Kernel.max(y_distance_from_start, y_distance_from_start * -1)
         Map.put(food, :distance, x_distance_from_start + y_distance_from_start)
@@ -46,7 +46,7 @@ defmodule BattleSnake2019.Field do
     number_of_locations = length(food_locations)
 
     if number_of_locations > 1,
-      do: Enum.sort_by(food_locations, &(&1.distance <= &2.distance)),
+      do: Enum.sort_by(food_locations, & &1.distance),
       else: food_locations
   end
 

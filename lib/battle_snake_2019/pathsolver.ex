@@ -1,6 +1,7 @@
 defmodule BattleSnake2019.Pathsolver do
   import BattleSnake2019.Field
   import BattleSnake2019.Field.Snake
+  import BattleSnake2019.Field.Food
   import BattleSnake2019.Pathsolver.Waypoints
 
   def find_best_path_for_snake(%{"field" => field, "you" => snake}) do

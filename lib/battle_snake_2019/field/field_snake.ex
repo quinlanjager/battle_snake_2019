@@ -1,8 +1,38 @@
 defmodule BattleSnake2019.Field.Snake do
+  import BattleSnake2019.Field.Nodes
   # your Snake settings
   @color "f707cb"
   @valid_moves ["right", "left", "up", "down"]
   @name "Sweetpea"
+
+  #  process snakes
+  def process_snakes(field, [%{"body" => body, "id" => id} | rest]) do
+    process_snake_body(field, body, id, :head)
+    |> process_snakes(rest)
+  end
+
+  def process_snakes(field, []) do
+    field
+  end
+
+  def process_snake_body(field, [], _id) do
+    field
+  end
+
+  def process_snake_body(field, [segment_coords | []], id) do
+    add_node(field, segment_coords, id, :tail)
+    |> process_snake_body([], id)
+  end
+
+  def process_snake_body(field, [segment_coords | rest], id) do
+    add_node(field, segment_coords, id, :body)
+    |> process_snake_body(rest, id)
+  end
+
+  def process_snake_body(field, [segment_coords | rest], id, :head) do
+    add_node(field, segment_coords, id, :head)
+    |> process_snake_body(rest, id)
+  end
 
   def get_color do
     @color

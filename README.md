@@ -1,5 +1,7 @@
 # BattleSnake2019
 
+[![Build Status](https://travis-ci.com/quinlanjager/battle_snake_2019.svg?branch=master)](https://travis-ci.com/quinlanjager/battle_snake_2019)
+
 **TODO: Add description**
 
 ## Installation

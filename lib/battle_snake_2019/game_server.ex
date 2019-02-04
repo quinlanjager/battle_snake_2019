@@ -1,4 +1,5 @@
 defmodule BattleSnake2019.GameServer do
+  import BattleSnake2019.Field
   use Agent
 
   @doc """
@@ -13,23 +14,32 @@ defmodule BattleSnake2019.GameServer do
   end
 
   @doc """
-  Gets a value from the `bucket` by `key`.
+  Update a value by key. Overwrites value completely.
   """
-  def get(games, key) do
-    Agent.get(games, &Map.get(&1, key))
+  def put(games, game) do
+    game_id = game["game"]["id"]
+    game_has_field = Map.has_key?(game, "field")
+
+    game_with_field =
+      if game_has_field, do: game, else: Map.put(game, "field", create_field(game))
+
+    current_field = game_with_field["field"]
+    updated_game = Map.put(game, "field", update_field(current_field, game))
+
+    Agent.update(games, &Map.put(&1, game_id, updated_game))
   end
 
   @doc """
-  Puts the `value` for the given `key` in the `bucket`.
+  Gets a value from the `bucket` by `key`.
   """
-  def put(games, key, value) do
-    Agent.update(games, &Map.put(&1, key, value))
+  def get(games, game_id) do
+    Agent.get(games, &Map.get(&1, game_id))
   end
 
   @doc """
   Deletes games from state
   """
-  def delete(games, key) do
-    Agent.update(games, &Map.delete(&1, key))
+  def delete(games, game_id) do
+    Agent.update(games, &Map.delete(&1, game_id))
   end
 end

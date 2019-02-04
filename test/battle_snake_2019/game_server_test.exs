@@ -7,9 +7,71 @@ defmodule BattleSnake2019.GameServerTest do
   end
 
   test "stores values by key", %{games: games} do
-    assert BattleSnake2019.GameServer.get(games, "1234") == nil
+    game = make_game()
+    game_id = game["game"]["id"]
+    assert BattleSnake2019.GameServer.get(games, game_id) == nil
 
-    BattleSnake2019.GameServer.put(games, "1234", %{"id" => "1234"})
-    assert BattleSnake2019.GameServer.get(games, "1234")["id"] == "1234"
+    BattleSnake2019.GameServer.put(games, game)
+    got_game = BattleSnake2019.GameServer.get(games, game_id)
+    assert got_game["game"]["id"] == "game-id-string"
+  end
+
+  def make_game do
+    %{
+      "game" => %{
+        "id" => "game-id-string"
+      },
+      "turn" => 4,
+      "board" => %{
+        "height" => 3,
+        "width" => 3,
+        "food" => [
+          %{
+            "x" => 2,
+            "y" => 2
+          }
+        ],
+        "snakes" => [
+          %{
+            "id" => "snake-id-string",
+            "name" => "Sneky Snek",
+            "health" => 90,
+            "body" => [
+              %{
+                "x" => 0,
+                "y" => 2
+              },
+              %{
+                "x" => 0,
+                "y" => 1
+              },
+              %{
+                "x" => 0,
+                "y" => 0
+              }
+            ]
+          }
+        ]
+      },
+      "you" => %{
+        "id" => "snake-id-string",
+        "name" => "Sneky Snek",
+        "health" => 90,
+        "body" => [
+          %{
+            "x" => 0,
+            "y" => 2
+          },
+          %{
+            "x" => 0,
+            "y" => 1
+          },
+          %{
+            "x" => 0,
+            "y" => 0
+          }
+        ]
+      }
+    }
   end
 end

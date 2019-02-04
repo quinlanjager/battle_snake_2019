@@ -1,5 +1,4 @@
 defmodule BattleSnake2019.Pathsolver.Waypoints do
-  import BattleSnake2019.Field
   import BattleSnake2019.Field.Nodes
 
   def get_waypoint_direction(node, start) do
@@ -44,11 +43,11 @@ defmodule BattleSnake2019.Pathsolver.Waypoints do
   end
 
   defp directions("y", velocity) do
-    if velocity == 1, do: "down", else: "up"
+    if velocity == -1, do: "down", else: "up"
   end
 
   defp directions("x", velocity) do
-    if velocity == 1, do: "left", else: "right"
+    if velocity == -1, do: "right", else: "left"
   end
 
   def keep_waypoint?(

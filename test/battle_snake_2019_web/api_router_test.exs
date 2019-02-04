@@ -1,7 +1,7 @@
 defmodule BattleSnake2019.Web.APIRouterTest do
   use ExUnit.Case
   use Plug.Test
-  alias BattleSnake2019.Field.Snake
+  alias BattleSnake2019.Snake
   alias BattleSnake2019.GameServer
   import Poison
 
@@ -9,7 +9,7 @@ defmodule BattleSnake2019.Web.APIRouterTest do
 
   describe "/start" do
     test "it responds to a start request with a colour" do
-      conn = post_to_endpoint("/start")
+      conn = post_to_endpoint("/start", mock_start())
       resp = BattleSnake2019.Web.APIRouter.call(conn, @opts)
 
       assert resp.state == :sent
@@ -18,6 +18,7 @@ defmodule BattleSnake2019.Web.APIRouterTest do
       {:ok, decoded_body} = decode(resp.resp_body)
 
       assert decoded_body == %{"color" => Snake.get_color()}
+      GameServer.delete(:game_server, "game-id-string")
     end
 
     test "it adds to the game server state" do
@@ -35,7 +36,7 @@ defmodule BattleSnake2019.Web.APIRouterTest do
     test "it responds to a move request with a move" do
       valid_moves = Snake.get_valid_moves()
 
-      conn = post_to_endpoint("/move")
+      conn = post_to_endpoint("/move", mock_start())
       resp = BattleSnake2019.Web.APIRouter.call(conn, @opts)
 
       assert resp.state == :sent
@@ -45,6 +46,7 @@ defmodule BattleSnake2019.Web.APIRouterTest do
 
       assert %{"move" => move} = decoded_body
       assert Enum.member?(valid_moves, move) == true
+      GameServer.delete(:game_server, "game-id-string")
     end
 
     test "it updates the game state" do
@@ -68,7 +70,7 @@ defmodule BattleSnake2019.Web.APIRouterTest do
     end
 
     test "it removes the game from state" do
-      GameServer.put(:game_server, "game-id-string", mock_start())
+      GameServer.put(:game_server, mock_start())
       conn = post_to_endpoint("/end", mock_start())
       BattleSnake2019.Web.APIRouter.call(conn, @opts)
 
@@ -104,7 +106,7 @@ defmodule BattleSnake2019.Web.APIRouterTest do
         "width" => 15,
         "food" => [
           %{
-            "x" => 1,
+            "x" => 2,
             "y" => 3
           }
         ],

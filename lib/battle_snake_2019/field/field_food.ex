@@ -2,11 +2,9 @@ defmodule BattleSnake2019.Field.Food do
   import BattleSnake2019.Field.Nodes
 
   def find_nearest_food(field, start) do
-    field_coords = Map.values(field)
-
     food_locations =
-      Enum.filter(field_coords, fn coords ->
-        Map.get(coords, :entity) == :food
+      Enum.filter(field, fn node ->
+        Map.get(node, :entity) == :food
       end)
       |> Enum.map(fn %{"x" => x, "y" => y} = food ->
         x_distance_from_start = x - start["x"]
@@ -25,7 +23,7 @@ defmodule BattleSnake2019.Field.Food do
 
   # process food
   def process_foods(field, [food_coords | rest]) do
-    add_node(field, food_coords, :food)
+    update_node(field, food_coords, :food)
     |> process_foods(rest)
   end
 

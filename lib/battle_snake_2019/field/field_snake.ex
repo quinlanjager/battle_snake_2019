@@ -1,9 +1,19 @@
 defmodule BattleSnake2019.Field.Snake do
   import BattleSnake2019.Field.Nodes
-  # your Snake settings
-  @color "f707cb"
-  @valid_moves ["right", "left", "up", "down"]
-  @name "Sweetpea"
+
+  def move_snake_on_field(field, [snake_segment | body], {coord, change}) do
+    next_segment = Enum.get(body, 0)
+    segment_coords = "#{snake_segment["x"]}_#{snake_segment["y"]}"
+
+    new_snake_segment_position =
+      Map.get(field, segment_coords) |> Map.put(coord, snake_segment[coord] + change)
+  end
+
+  def get_next_segment_change(next_segment, current_segment) do
+    x_change = current_segment["x"] - next_segment["x"]
+    y_change = current_segment["y"] - next_segment["y"]
+    if x_change == 0, do: {"y", y_change}, else: {"x", x_change}
+  end
 
   #  process snakes
   def process_snakes(field, [%{"body" => body, "id" => id} | rest]) do
@@ -20,43 +30,22 @@ defmodule BattleSnake2019.Field.Snake do
   end
 
   def process_snake_body(field, [segment_coords | []], id) do
-    add_node(field, segment_coords, id, :tail)
+    update_node(field, segment_coords, id, :tail)
     |> process_snake_body([], id)
   end
 
   def process_snake_body(field, [segment_coords | rest], id) do
-    add_node(field, segment_coords, id, :body)
+    update_node(field, segment_coords, id, :body)
     |> process_snake_body(rest, id)
   end
 
   def process_snake_body(field, [segment_coords | rest], id, :head) do
-    add_node(field, segment_coords, id, :head)
+    update_node(field, segment_coords, id, :head)
     |> process_snake_body(rest, id)
   end
 
-  def get_color do
-    @color
-  end
-
-  def get_valid_moves do
-    @valid_moves
-  end
-
-  # def move(%{} = game) do
-  # end
-
-  def move(_) do
-    %{"move" => "right"}
-  end
-
-  def get_snake_name do
-    @name
-  end
-
   def get_segment_location(field, snake_id, segment) do
-    field_coords = Map.values(field)
-
-    Enum.find(field_coords, fn node ->
+    Enum.find(field, fn node ->
       entity = Map.get(node, :entity)
       segment_type = Map.get(node, :segment_type)
       entity == snake_id and segment_type == segment

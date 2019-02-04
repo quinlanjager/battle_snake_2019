@@ -3,64 +3,64 @@ defmodule BattleSnake2019.FieldTest do
   import BattleSnake2019.Field
 
   test "creates a board" do
-    %{"field" => field} = create_field(example_game())
+    field = create_field(example_game())
 
-    assert %{
-             "1_1" => %{"x" => 1, "y" => 1},
-             "1_2" => %{"x" => 1, "y" => 2},
-             "1_3" => %{"x" => 1, "y" => 3},
-             "2_1" => %{"x" => 2, "y" => 1},
-             "2_2" => %{"x" => 2, "y" => 2},
-             "2_3" => %{"x" => 2, "y" => 3},
-             "3_1" => %{"x" => 3, "y" => 1},
-             "3_2" => %{"x" => 3, "y" => 2},
-             "3_3" => %{"x" => 3, "y" => 3}
-           } = field
+    assert [
+             %{"x" => 0, "y" => 0},
+             %{"x" => 1, "y" => 0},
+             %{"x" => 2, "y" => 0},
+             %{"x" => 0, "y" => 1},
+             %{"x" => 1, "y" => 1},
+             %{"x" => 2, "y" => 1},
+             %{"x" => 0, "y" => 2},
+             %{"x" => 1, "y" => 2},
+             %{"x" => 2, "y" => 2}
+           ] = field
   end
 
   test "adds items" do
-    %{"field" => field} = create_field(example_game())
+    field = create_field(example_game())
 
-    assert %{
-             "1_1" => %{"x" => 1, "y" => 1},
-             "1_2" => %{"x" => 1, "y" => 2},
-             "1_3" => %{"x" => 1, "y" => 3},
-             "2_1" => %{"x" => 2, "y" => 1},
-             "2_2" => %{"x" => 2, "y" => 2},
-             "2_3" => %{"x" => 2, "y" => 3},
-             "3_1" => %{"x" => 3, "y" => 1},
-             "3_2" => %{"x" => 3, "y" => 2},
-             "3_3" => %{"x" => 3, "y" => 3}
-           } = field
+    assert [
+             %{"x" => 0, "y" => 0},
+             %{"x" => 1, "y" => 0},
+             %{"x" => 2, "y" => 0},
+             %{"x" => 0, "y" => 1},
+             %{"x" => 1, "y" => 1},
+             %{"x" => 2, "y" => 1},
+             %{"x" => 0, "y" => 2},
+             %{"x" => 1, "y" => 2},
+             %{"x" => 2, "y" => 2}
+           ] = field
 
     updated_field = update_field(field, example_game())
 
-    assert %{
-             "1_1" => %{
-               "x" => 1,
-               "y" => 1,
-               entity: "snake-id-string",
-               segment_type: :tail
+    assert [
+             %{
+               :entity => "snake-id-string",
+               :segment_type => :tail,
+               "x" => 0,
+               "y" => 0
              },
-             "1_2" => %{
-               "x" => 1,
-               "y" => 2,
-               entity: "snake-id-string",
-               segment_type: :body
+             %{"x" => 1, "y" => 0},
+             %{"x" => 2, "y" => 0},
+             %{
+               :entity => "snake-id-string",
+               :segment_type => :body,
+               "x" => 0,
+               "y" => 1
              },
-             "1_3" => %{
-               "x" => 1,
-               "y" => 3,
-               entity: "snake-id-string",
-               segment_type: :head
+             %{"x" => 1, "y" => 1},
+             %{"x" => 2, "y" => 1},
+             %{
+               :entity => "snake-id-string",
+               :segment_type => :head,
+               "x" => 0,
+               "y" => 2
              },
-             "2_1" => %{"x" => 2, "y" => 1},
-             "2_2" => %{"x" => 2, "y" => 2, entity: :food, segment_type: nil},
-             "2_3" => %{"x" => 2, "y" => 3},
-             "3_1" => %{"x" => 3, "y" => 1},
-             "3_2" => %{"x" => 3, "y" => 2},
-             "3_3" => %{"x" => 3, "y" => 3}
-           } = updated_field
+             %{"x" => 1, "y" => 2},
+             %{:entity => :food, :segment_type => nil, "x" => 2, "y" => 2}
+           ] = updated_field
   end
 
   defp example_game do
@@ -85,16 +85,16 @@ defmodule BattleSnake2019.FieldTest do
             "health" => 90,
             "body" => [
               %{
-                "x" => 1,
-                "y" => 3
-              },
-              %{
-                "x" => 1,
+                "x" => 0,
                 "y" => 2
               },
               %{
-                "x" => 1,
+                "x" => 0,
                 "y" => 1
+              },
+              %{
+                "x" => 0,
+                "y" => 0
               }
             ]
           }
@@ -106,8 +106,16 @@ defmodule BattleSnake2019.FieldTest do
         "health" => 90,
         "body" => [
           %{
-            "x" => 1,
-            "y" => 3
+            "x" => 0,
+            "y" => 2
+          },
+          %{
+            "x" => 0,
+            "y" => 1
+          },
+          %{
+            "x" => 0,
+            "y" => 0
           }
         ]
       }

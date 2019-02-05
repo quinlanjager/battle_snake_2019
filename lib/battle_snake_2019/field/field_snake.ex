@@ -17,7 +17,9 @@ defmodule BattleSnake2019.Field.Snake do
 
   #  process snakes
   def process_snakes(field, [%{"body" => body, "id" => id} | rest]) do
-    process_snake_body(field, body, id, :head)
+    unique_nodes = Enum.uniq_by(body, fn %{"x" => x, "y" => y} -> "#{x}_#{y}" end)
+
+    process_snake_body(field, unique_nodes, id, :head)
     |> process_snakes(rest)
   end
 

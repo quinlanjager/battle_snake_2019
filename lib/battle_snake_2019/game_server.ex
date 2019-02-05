@@ -18,15 +18,10 @@ defmodule BattleSnake2019.GameServer do
   """
   def put(games, game) do
     game_id = game["game"]["id"]
-    game_has_field = Map.has_key?(game, "field")
+    field = create_field(game) |> update_field(game)
+    game_with_field = Map.put(game, "field", field)
 
-    game_with_field =
-      if game_has_field, do: game, else: Map.put(game, "field", create_field(game))
-
-    current_field = game_with_field["field"]
-    updated_game = Map.put(game, "field", update_field(current_field, game))
-
-    Agent.update(games, &Map.put(&1, game_id, updated_game))
+    Agent.update(games, &Map.put(&1, game_id, game_with_field))
   end
 
   @doc """

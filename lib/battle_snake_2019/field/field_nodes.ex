@@ -23,7 +23,7 @@ defmodule BattleSnake2019.Field.Nodes do
   end
 
   def get_adjacent_nodes_and_cost(field, node) do
-    Enum.map(@directions, fn direction ->
+    Task.async_stream(@directions, fn direction ->
       [coordinate, directions] = direction
 
       Enum.map(directions, fn dir ->
@@ -35,6 +35,7 @@ defmodule BattleSnake2019.Field.Nodes do
           else: Map.merge(adjacent_node, %{cost: node.cost + 1})
       end)
     end)
+    |> Enum.reduce([], fn {_code, result}, soFar -> soFar ++ result end)
     |> List.flatten()
   end
 

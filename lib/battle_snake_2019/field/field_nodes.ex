@@ -1,8 +1,28 @@
 defmodule BattleSnake2019.Field.Nodes do
+  import Kernel
   @directions [["x", [1, -1]], ["y", [1, -1]]]
 
-  def is_the_node?(%{"x" => x, "y" => y}, coords) do
-    x == coords["x"] and y == coords["y"]
+  def is_the_node?(node, other) do
+    Map.get(node, "x") == Map.get(other, "x") and Map.get(node, "y") == Map.get(other, "y")
+  end
+
+  def is_same_node_type?(node, other) do
+    Map.get(node, :entity) == Map.get(other, :entity) and
+      Map.get(node, :segment_type) == Map.get(other, :segment_type)
+  end
+
+  def is_adjacent_node?(node, other) do
+    node_y = Map.get(node, "y")
+    node_x = Map.get(node, "x")
+    other_y = Map.get(other, "y")
+    other_x = Map.get(other, "x")
+    x_difference = node_x - other_x
+    y_diffrence = node_y - other_y
+
+    is_adjacent_vertically = max(x_difference, x_difference * -1) == 1 and other_y == node_y
+    is_adjacent_horizontally = max(y_diffrence, y_diffrence * -1) == 1 and other_x == node_x
+
+    is_adjacent_horizontally or is_adjacent_vertically
   end
 
   def get_adjacent_nodes(field, node) do
@@ -19,7 +39,6 @@ defmodule BattleSnake2019.Field.Nodes do
       end)
     end)
     |> List.flatten()
-    |> Enum.filter(&Kernel.is_map/1)
   end
 
   def get_adjacent_nodes_and_cost(field, node) do

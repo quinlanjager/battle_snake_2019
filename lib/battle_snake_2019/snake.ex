@@ -8,7 +8,8 @@ defmodule BattleSnake2019.Snake do
 
   def move(%{"game" => %{"id" => game_id}}) do
     current_game = get(:game_server, game_id)
-    move = find_best_path_for_snake(current_game)
+    # find_best_path_for_snake(current_game) 
+    move = "right"
     %{"move" => move}
   end
 

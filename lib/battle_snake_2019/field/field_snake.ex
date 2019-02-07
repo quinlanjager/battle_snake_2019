@@ -2,7 +2,7 @@ defmodule BattleSnake2019.Field.Snake do
   import BattleSnake2019.Field.Nodes
 
   def move_snake_on_field(field, [snake_segment | body], {coord, change}) do
-    next_segment = Enum.get(body, 0)
+    next_segment = Enum.at(body, 0)
     segment_coords = "#{snake_segment["x"]}_#{snake_segment["y"]}"
 
     new_snake_segment_position =

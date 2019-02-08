@@ -25,11 +25,14 @@ defmodule BattleSnake2019.Field.Nodes do
     is_adjacent_horizontally or is_adjacent_vertically
   end
 
+  def calculate_distance(node, other) do
+  end
+
   def get_adjacent_nodes(field, node) do
     Task.async_stream(@directions, fn direction ->
       [coordinate, directions] = direction
 
-      Task.async_stream(directions, fn dir ->
+      Enum.map(directions, fn dir ->
         adjacent_node_coords = Map.put(node, coordinate, node[coordinate] + dir)
         adjacent_node = get_node(field, adjacent_node_coords)
 
@@ -37,7 +40,6 @@ defmodule BattleSnake2019.Field.Nodes do
           do: nil,
           else: adjacent_node
       end)
-      |> Enum.reduce([], fn {:ok, result}, soFar -> soFar ++ result end)
     end)
     |> Enum.reduce([], fn {:ok, result}, soFar -> soFar ++ result end)
     |> List.flatten()

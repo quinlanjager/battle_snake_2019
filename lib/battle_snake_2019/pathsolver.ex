@@ -9,64 +9,68 @@ defmodule BattleSnake2019.Pathsolver do
 
     unvisited_list = [Map.put(start, :cost, 0)]
     visited_list = []
-    paths_to_goal = find_goal(field, start, goal_spec, unvisited_list, visited_list)
+    path = %{}
+    IO.puts("finding goal")
+    paths_to_goal = find_goal(field, start, goal_spec, unvisited_list, visited_list, path)
+    IO.puts("paths_to_goal")
+    IO.inspect(paths_to_goal)
 
     case paths_to_goal do
-      {:ok, waypoints} ->
-        [goal | sorted_waypoints] = Enum.sort_by(waypoints, & &1.cost, &>=/2)
-        path = []
+      {:ok, waypoints, goal} ->
+        {:ok, result} = find_first_step_to_goal(start, goal, waypoints)
 
-        {:ok, results} = find_path_to_start(start, goal, sorted_waypoints, path)
+        get_waypoint_direction(result, start)
 
-        first_step = Enum.sort_by(results, & &1.cost, &<=/2) |> Enum.at(0)
-
-        get_waypoint_direction(first_step, start)
-
-      {:error, message} ->
+      {:error, message, _goal} ->
         IO.puts(message)
         # do something else :(
     end
   end
 
-  def find_goal(field, start, goal_spec, [node | rest], visited_list) do
+  def find_goal(field, start, goal_spec, [node | rest], visited_list, path) do
     is_same_type = is_same_node_type?(goal_spec, node)
     has_same_coordinates = is_the_node?(goal_spec, node)
     is_goal = is_same_type or has_same_coordinates
 
     unvisited_list =
-      get_adjacent_nodes_and_cost(field, start)
+      get_adjacent_nodes_and_cost(field, node)
       |> Enum.filter(fn waypoint -> keep_waypoint?(waypoint, visited_list) end)
 
-    updated_visited_list = visited_list ++ [node]
-    updated_unvisited_list = (rest ++ unvisited_list) |> Enum.sort_by(& &1.cost, &<=/2)
+    updated_path =
+      Enum.reduce(unvisited_list, path, fn %{"x" => x, "y" => y}, soFar ->
+        Map.put(soFar, "#{x}_#{y}", node)
+      end)
 
-    if is_goal,
-      do: {:ok, updated_visited_list},
-      else: find_goal(field, start, goal_spec, updated_unvisited_list, updated_visited_list)
+    updated_visited_list = visited_list ++ [node]
+
+    if is_goal do
+      {:ok, path, node}
+    else
+      updated_unvisited_list = (rest ++ unvisited_list) |> Enum.sort_by(& &1.cost, &<=/2)
+
+      find_goal(
+        field,
+        start,
+        goal_spec,
+        updated_unvisited_list,
+        updated_visited_list,
+        updated_path
+      )
+    end
   end
 
   def find_goal(_field, _start, goal_spec, [], _visited_list) do
     {:error, "couldn't find goal", goal_spec}
   end
 
-  def find_path_to_start(start, current_step, [next_waypoint | rest], path) do
-    is_adjacent = is_adjacent_node?(current_step, next_waypoint)
-    has_lower_cost = current_step.cost > next_waypoint.cost
-    is_start = is_the_node?(start, current_step)
-    updated_path = if is_adjacent and has_lower_cost, do: path ++ [current_step]
+  def find_first_step_to_goal(start, %{"x" => x, "y" => y} = maybe_first_step, waypoints) do
+    parent = waypoints["#{x}_#{y}"]
+    is_start = is_the_node?(parent, start)
 
-    if is_start,
-      # don't want the start node in the paths
-      do: {:ok, path},
-      else: find_path_to_start(start, next_waypoint, rest, updated_path)
-  end
-
-  def find_path_to_start(start, current_step, [], path) do
-    is_start = is_the_node?(start, current_step)
-
-    if is_start,
-      # don't want the start node in the paths
-      do: {:ok, path},
-      else: {:error, "couldn't find start", start}
+    if is_start do
+      {:ok, maybe_first_step}
+    else
+      find_first_step_to_goal(start, parent, waypoints)
+    end
   end
 end

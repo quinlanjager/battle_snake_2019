@@ -56,20 +56,19 @@ defmodule BattleSnake2019.Pathsolver.Waypoints do
       ) do
     waypoint_is_not_body = segment_type != :body and segment_type != :tail
 
-    did_not_find_better_waypoint = !there_a_better_waypoint?(waypoint, closed_list)
+    waypoint_has_not_been_visited = !waypoint_has_been_visited?(waypoint, closed_list)
 
-    waypoint_is_not_body and did_not_find_better_waypoint
+    waypoint_is_not_body and waypoint_has_not_been_visited
   end
 
   def keep_waypoint?(nil, _closed_list), do: false
 
-  def keep_waypoint?(waypoint, closed_list), do: !there_a_better_waypoint?(waypoint, closed_list)
+  def keep_waypoint?(waypoint, closed_list),
+    do: !waypoint_has_been_visited?(waypoint, closed_list)
 
-  defp there_a_better_waypoint?(%{"x" => x, "y" => y, :cost => cost}, closed_list) do
+  defp waypoint_has_been_visited?(%{"x" => x, "y" => y, :cost => cost}, closed_list) do
     Enum.any?(closed_list, fn closed_tile ->
-      has_same_coordinate = closed_tile["x"] == x and closed_tile["y"] == y
-      has_same_cost_or_better = closed_tile.cost <= cost
-      has_same_cost_or_better and has_same_coordinate
+      closed_tile["x"] == x and closed_tile["y"] == y
     end)
   end
 end

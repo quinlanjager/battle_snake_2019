@@ -1,10 +1,10 @@
 defmodule BattleSnake2019.Web.APIRouter do
   use Plug.Router
-  import Poison
+  import Jason
   alias BattleSnake2019.Snake
   alias BattleSnake2019.GameServer
 
-  plug(Plug.Parsers, parsers: [:json], pass: ["application/json"], json_decoder: Poison)
+  plug(Plug.Parsers, parsers: [:json], pass: ["application/json"], json_decoder: Jason)
   plug(Plug.Logger)
   plug(:match)
   plug(:dispatch)

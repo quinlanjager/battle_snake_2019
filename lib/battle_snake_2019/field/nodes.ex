@@ -26,10 +26,10 @@ defmodule BattleSnake2019.Field.Nodes do
   end
 
   def get_adjacent_nodes(field, node) do
-    Enum.map(@directions, fn direction ->
+    Task.async_stream(@directions, fn direction ->
       [coordinate, directions] = direction
 
-      Enum.map(directions, fn dir ->
+      Task.async_stream(directions, fn dir ->
         adjacent_node_coords = Map.put(node, coordinate, node[coordinate] + dir)
         adjacent_node = get_node(field, adjacent_node_coords)
 
@@ -37,7 +37,9 @@ defmodule BattleSnake2019.Field.Nodes do
           do: nil,
           else: adjacent_node
       end)
+      |> Enum.reduce([], fn {:ok, result}, soFar -> soFar ++ result end)
     end)
+    |> Enum.reduce([], fn {:ok, result}, soFar -> soFar ++ result end)
     |> List.flatten()
   end
 

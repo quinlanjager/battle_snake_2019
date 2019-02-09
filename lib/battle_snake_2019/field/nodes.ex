@@ -12,20 +12,16 @@ defmodule BattleSnake2019.Field.Nodes do
   end
 
   def is_adjacent_node?(node, other) do
-    node_y = Map.get(node, "y")
-    node_x = Map.get(node, "x")
-    other_y = Map.get(other, "y")
-    other_x = Map.get(other, "x")
-    x_difference = node_x - other_x
-    y_diffrence = node_y - other_y
-
-    is_adjacent_vertically = max(x_difference, x_difference * -1) == 1 and other_y == node_y
-    is_adjacent_horizontally = max(y_diffrence, y_diffrence * -1) == 1 and other_x == node_x
+    %{"x" => x_difference, "y" => y_diffrence} = get_distance(node, other)
+    is_adjacent_vertically = x_difference == 1 and other["y"] == node["y"]
+    is_adjacent_horizontally = y_diffrence == 1 and other["x"] == node["x"]
 
     is_adjacent_horizontally or is_adjacent_vertically
   end
 
   def calculate_distance(node, other) do
+    %{"x" => x_difference, "y" => y_diffrence} = get_distance(node, other)
+    :math.sqrt(:math.pow(x_difference, 2) + :math.pow(y_diffrence, 2))
   end
 
   def get_adjacent_nodes(field, node) do
@@ -45,21 +41,11 @@ defmodule BattleSnake2019.Field.Nodes do
     |> List.flatten()
   end
 
-  def get_adjacent_nodes_and_cost(field, node) do
-    Task.async_stream(@directions, fn direction ->
-      [coordinate, directions] = direction
-
-      Enum.map(directions, fn dir ->
-        adjacent_node_coords = Map.put(node, coordinate, node[coordinate] + dir)
-        adjacent_node = get_node(field, adjacent_node_coords)
-
-        if is_nil(adjacent_node),
-          do: nil,
-          else: Map.merge(adjacent_node, %{cost: node.cost + 1})
-      end)
-    end)
-    |> Enum.reduce([], fn {_code, result}, soFar -> soFar ++ result end)
-    |> List.flatten()
+  def get_adjacent_node(field, node, direction) do
+    {coordinate, adjustment} = get_adjustment_by_direction(direction)
+    current_cordinate = node[coordinate]
+    node_to_find = Map.put(node, coordinate, current_cordinate + adjustment)
+    get_node(field, node_to_find)
   end
 
   def get_node(field, node) do
@@ -78,5 +64,32 @@ defmodule BattleSnake2019.Field.Nodes do
       })
 
     List.replace_at(field, node_index, updated_node)
+  end
+
+  defp get_distance(node, other) do
+    node_y = Map.get(node, "y")
+    node_x = Map.get(node, "x")
+    other_y = Map.get(other, "y")
+    other_x = Map.get(other, "x")
+    x_difference = node_x - other_x
+    y_diffrence = node_y - other_y
+
+    %{"x" => max(x_difference, x_difference * -1), "y" => max(y_diffrence, y_diffrence * -1)}
+  end
+
+  defp get_adjustment_by_direction(direction) do
+    case direction do
+      "left" ->
+        {"x", -1}
+
+      "right" ->
+        {"x", +1}
+
+      "up" ->
+        {"y", -1}
+
+      "down" ->
+        {"y", +1}
+    end
   end
 end

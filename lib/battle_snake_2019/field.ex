@@ -24,6 +24,6 @@ defmodule BattleSnake2019.Field do
 
   defp build_row(row, width) do
     0..(width - 1)
-    |> Enum.map(fn column -> %{"x" => column, "y" => row} end)
+    |> Enum.map(fn column -> %{"x" => column, "y" => row, :id => "#{column}_#{row}"} end)
   end
 end

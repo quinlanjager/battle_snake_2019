@@ -1,25 +1,58 @@
 defmodule BattleSnake2019.Pathsolver do
-  import BattleSnake2019.Field.Snake
-  import BattleSnake2019.Field.Nodes
-  import BattleSnake2019.Pathsolver.Waypoints
+  alias BattleSnake2019.Pathsolver.Path
+  alias BattleSnake2019.Field.Nodes
+  alias BattleSnake2019.Field.Snake
+  alias BattleSnake2019.Pathsolver.Waypoints
 
-  def find_path_to_goal(field, snake, goal_spec) do
+  def solve_shortest_path_to_goal(field, snake, goal_spec) do
     snake_id = snake["id"]
-    start = get_segment_location(field, snake_id, :head) |> Map.put(:cost, 0)
+    start = Snake.get_segment_location(field, snake_id, :head) |> Map.put(:cost, 0)
+    paths_to_goal = find_ideal_path(field, start, goal_spec)
 
+    case paths_to_goal do
+      {:ok, path, goal} ->
+        # index 0 is the start
+        Waypoints.get_waypoint_direction(Enum.at(path, 1), start)
+
+      nil ->
+        IO.puts("couldn't find goal")
+        # do something else :(
+    end
+  end
+
+  def solve_longest_path_to_goal(field, snake, goal_spec) do
+    snake_id = snake["id"]
+    start = Snake.get_segment_location(field, snake_id, :head) |> Map.put(:cost, 0)
+    paths_to_goal = find_ideal_path(field, start, goal_spec)
+
+    case paths_to_goal do
+      {:ok, path, goal} ->
+        extended_path = Path.extend_path(path, goal)
+        # index 0 is the start
+        Waypoints.get_waypoint_direction(Enum.at(path, 1), start)
+
+      nil ->
+        IO.puts("couldn't find goal")
+        # do something else :(
+    end
+  end
+
+  def find_ideal_path(field, start, goal_spec) do
     nodes_matching_spec =
       Enum.filter(field, fn node ->
-        is_same_node_type?(node, goal_spec)
+        Nodes.is_same_node_type?(node, goal_spec)
       end)
 
-    {_result_code, paths_to_goal} =
+    {_result_code, path_to_goal} =
       Task.async_stream(
         nodes_matching_spec,
         fn goal ->
           unvisited_list = [Map.put(start, :cost, 0)]
           visited_list = []
           path = %{}
-          paths_to_goal = find_goal(field, start, goal, unvisited_list, visited_list, path)
+
+          paths_to_goal =
+            solve_path_to_goal(field, start, goal, unvisited_list, visited_list, path)
         end,
         ordered: false,
         timeout: 50,
@@ -33,31 +66,22 @@ defmodule BattleSnake2019.Pathsolver do
         end
       )
 
-    case paths_to_goal do
-      {:ok, path, goal} ->
-        extended_path = extend_path(path, field)
-        IO.inspect(extended_path)
-        get_waypoint_direction(Enum.at(extended_path, 1), start)
-
-      nil ->
-        IO.puts("couldn't find goal")
-        # do something else :(
-    end
+    path_to_goal
   end
 
-  def find_goal(field, start, goal, [node | rest], visited_list, path) do
-    has_same_coordinates = is_the_node?(goal, node)
+  def solve_path_to_goal(field, start, goal, [node | rest], visited_list, path) do
+    has_same_coordinates = Nodes.is_the_node?(goal, node)
     is_goal = has_same_coordinates
 
     if is_goal do
-      path_to_start = find_path(path, node, [node])
+      path_to_start = Path.trace_path(path, node, [node])
       {:ok, path_to_start, node}
     else
       unvisited_list =
-        get_adjacent_nodes(field, node)
-        |> Enum.filter(fn waypoint -> keep_waypoint?(waypoint, visited_list) end)
+        Nodes.get_adjacent_nodes(field, node)
+        |> Enum.filter(fn waypoint -> Waypoints.keep_waypoint?(waypoint, visited_list) end)
         |> Enum.map(fn waypoint ->
-          Map.put(waypoint, :cost, get_cost(waypoint, node, goal))
+          Map.put(waypoint, :cost, Waypoints.get_cost(waypoint, node, goal))
         end)
 
       updated_path =
@@ -68,7 +92,7 @@ defmodule BattleSnake2019.Pathsolver do
       updated_visited_list = visited_list ++ [node]
       updated_unvisited_list = (rest ++ unvisited_list) |> Enum.sort_by(& &1.cost, &<=/2)
 
-      find_goal(
+      solve_path_to_goal(
         field,
         start,
         goal,
@@ -79,52 +103,7 @@ defmodule BattleSnake2019.Pathsolver do
     end
   end
 
-  def find_goal(_field, _start, goal_spec, [], _visited_list) do
+  def solve_path_to_goal(_field, _start, goal_spec, [], _visited_list, _path) do
     {:error, "couldn't find goal", goal_spec}
   end
-
-  def find_path(path, %{"x" => x, "y" => y}, path_so_far) do
-    parent = Map.get(path, "#{x}_#{y}")
-
-    if is_nil(parent) do
-      path_so_far
-    else
-      find_path(path, parent, [parent | path_so_far])
-    end
-  end
-
-  defp extend_path(path, field) do
-    Enum.chunk_every(path, 2)
-    |> Enum.map(fn paths ->
-      extend_pair(paths, field)
-    end)
-    |> List.flatten()
-  end
-
-  defp extend_pair([path1, path2] = pair, field) do
-    direction = get_waypoint_direction(path2, path1)
-
-    directions_to_check =
-      if direction == "left" or direction == "right" do
-        ["up", "down"]
-      else
-        ["left", "right"]
-      end
-
-    pairs_to_add =
-      Enum.map(directions_to_check, fn direction_to_check ->
-        Enum.map(pair, fn path ->
-          get_adjacent_node(field, path, direction_to_check)
-        end)
-      end)
-      |> Enum.filter(fn [new_path_1, new_path_2] = set ->
-        !Kernel.is_nil(new_path_1) and !Kernel.is_nil(new_path_2) and
-          keep_waypoint?(new_path_1, []) and keep_waypoint?(new_path_2, [])
-      end)
-
-    Enum.intersperse(pair, Enum.at(pairs_to_add, 0, []))
-    |> List.flatten()
-  end
-
-  defp extend_pair(pair, field), do: pair
 end

@@ -10,7 +10,7 @@ defmodule BattleSnake2019.Snake do
   def move(%{"game" => %{"id" => game_id}}) do
     current_game = get(:game_server, game_id)
     goal_spec = %{:entity => :food, :segment_type => nil}
-    move = find_path_to_goal(current_game["field"], current_game["you"], goal_spec)
+    move = solve_shortest_path_to_goal(current_game["field"], current_game["you"], goal_spec)
     IO.puts("move #{move}")
     %{"move" => move}
   end

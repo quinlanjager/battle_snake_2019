@@ -1,18 +1,16 @@
 defmodule BattleSnake2019.Field do
   import BattleSnake2019.Field.Snake
   import BattleSnake2019.Field.Food
-  import BattleSnake2019.Field.Nodes
 
-  def create_field(%{"board" => board} = game) do
+  def create_field(%{"board" => board}) do
     %{
       "height" => height,
       "width" => width
     } = board
 
-    field =
-      0..(height - 1)
-      |> Enum.map(fn row -> build_row(row, width) end)
-      |> List.flatten()
+    0..(height - 1)
+    |> Enum.map(fn row -> build_row(row, width) end)
+    |> List.flatten()
   end
 
   def update_field(field, %{"board" => board}) do
@@ -26,6 +24,6 @@ defmodule BattleSnake2019.Field do
 
   defp build_row(row, width) do
     0..(width - 1)
-    |> Enum.map(fn column -> %{"x" => column, "y" => row} end)
+    |> Enum.map(fn column -> %{"x" => column, "y" => row, :id => "#{column}_#{row}"} end)
   end
 end

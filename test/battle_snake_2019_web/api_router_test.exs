@@ -3,7 +3,7 @@ defmodule BattleSnake2019.Web.APIRouterTest do
   use Plug.Test
   alias BattleSnake2019.Snake
   alias BattleSnake2019.GameServer
-  import Poison
+  import Jason
 
   @opts BattleSnake2019.Web.APIRouter.init([])
 

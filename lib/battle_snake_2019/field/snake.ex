@@ -1,23 +1,11 @@
 defmodule BattleSnake2019.Field.Snake do
   import BattleSnake2019.Field.Nodes
 
-  def move_snake_on_field(field, [snake_segment | body], {coord, change}) do
-    next_segment = Enum.get(body, 0)
-    segment_coords = "#{snake_segment["x"]}_#{snake_segment["y"]}"
-
-    new_snake_segment_position =
-      Map.get(field, segment_coords) |> Map.put(coord, snake_segment[coord] + change)
-  end
-
-  def get_next_segment_change(next_segment, current_segment) do
-    x_change = current_segment["x"] - next_segment["x"]
-    y_change = current_segment["y"] - next_segment["y"]
-    if x_change == 0, do: {"y", y_change}, else: {"x", x_change}
-  end
-
   #  process snakes
   def process_snakes(field, [%{"body" => body, "id" => id} | rest]) do
-    process_snake_body(field, body, id, :head)
+    unique_nodes = Enum.uniq_by(body, fn %{"x" => x, "y" => y} -> "#{x}_#{y}" end)
+
+    process_snake_body(field, unique_nodes, id, :head)
     |> process_snakes(rest)
   end
 

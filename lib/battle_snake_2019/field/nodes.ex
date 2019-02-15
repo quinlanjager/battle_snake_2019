@@ -7,8 +7,15 @@ defmodule BattleSnake2019.Field.Nodes do
   end
 
   def is_same_node_type?(node, other) do
-    Map.get(node, :entity) == Map.get(other, :entity) and
-      Map.get(node, :segment_type) == Map.get(other, :segment_type)
+    is_same_entity?(node, other) and is_same_segment?(node, other)
+  end
+
+  def is_same_entity?(node, other) do
+    Map.get(node, :entity) == Map.get(other, :entity)
+  end
+
+  def is_same_segment?(node, other) do
+    Map.get(node, :segment_type) == Map.get(other, :segment_type)
   end
 
   def is_adjacent_node?(node, other) do
@@ -30,11 +37,7 @@ defmodule BattleSnake2019.Field.Nodes do
 
       Enum.map(directions, fn dir ->
         adjacent_node_coords = Map.put(node, coordinate, node[coordinate] + dir)
-        adjacent_node = get_node(field, adjacent_node_coords)
-
-        if is_nil(adjacent_node),
-          do: nil,
-          else: adjacent_node
+        get_node(field, adjacent_node_coords)
       end)
     end)
     |> Enum.reduce([], fn {:ok, result}, soFar -> soFar ++ result end)

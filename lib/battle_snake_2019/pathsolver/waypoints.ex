@@ -20,18 +20,20 @@ defmodule BattleSnake2019.Pathsolver.Waypoints do
 
   def keep_waypoint?(
         %{segment_type: segment_type} = waypoint,
-        closed_list
+        closed_list,
+        goal
       ) do
+    waypoint_is_the_goal = is_the_node?(goal, waypoint)
     waypoint_is_not_body = segment_type != :body and segment_type != :tail
 
     waypoint_has_not_been_visited = !waypoint_has_been_visited?(waypoint, closed_list)
 
-    waypoint_is_not_body and waypoint_has_not_been_visited
+    (waypoint_is_not_body and waypoint_has_not_been_visited) or waypoint_is_the_goal
   end
 
-  def keep_waypoint?(nil, _closed_list), do: false
+  def keep_waypoint?(nil, _closed_list, _goal), do: false
 
-  def keep_waypoint?(waypoint, closed_list),
+  def keep_waypoint?(waypoint, closed_list, _goal),
     do: !waypoint_has_been_visited?(waypoint, closed_list)
 
   defp directions("y", velocity) do

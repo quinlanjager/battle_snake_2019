@@ -13,12 +13,17 @@ defmodule BattleSnake2019.Snake do
   def move(%{"game" => %{"id" => game_id}}) do
     current_game = GameServer.get(:game_server, game_id)
     game_facts = Facts.get_facts(current_game)
-    goal_name = Judge.evaluate(game_facts, GoalMatcher)
+    {goal_name, path_type} = Judge.evaluate(game_facts, GoalMatcher)
 
+    IO.puts(goal_name)
     goals = Map.get(game_facts, goal_name)
 
     move =
-      Pathsolver.solve_shortest_path_to_goal(current_game["field"], current_game["you"], goals)
+      if path_type == :short do
+        Pathsolver.solve_shortest_path_to_goal(current_game["field"], current_game["you"], goals)
+      else
+        Pathsolver.solve_longest_path_to_goal(current_game["field"], current_game["you"], goals)
+      end
 
     IO.puts("move #{move}")
     %{"move" => move}

@@ -28,7 +28,7 @@ defmodule BattleSnake2019.Pathsolver do
 
     case paths_to_goal do
       {:ok, path, goal} ->
-        extended_path = Path.extend_path(path, goal)
+        extended_path = Path.extend_path(path, field)
         # index 0 is the start
         Waypoints.get_waypoint_direction(Enum.at(path, 1), start)
 
@@ -51,7 +51,7 @@ defmodule BattleSnake2019.Pathsolver do
             solve_path_to_goal(field, start, goal, unvisited_list, visited_list, path)
         end,
         ordered: false,
-        timeout: 200,
+        timeout: 500,
         on_timeout: :kill_task
       )
       |> Enum.filter(fn {message, _result} -> message != :error and message != :exit end)

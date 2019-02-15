@@ -6,7 +6,7 @@ defmodule BattleSnake2019.Snake do
   alias BattleSnake2019.Rules.GoalMatcher
 
   # your Snake settings
-  @color "f707cb"
+  @color "#f707cb"
   @valid_moves ["right", "left", "up", "down"]
   @name "Sweetpea"
 

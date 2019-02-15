@@ -51,10 +51,9 @@ defmodule BattleSnake2019.Pathsolver do
             solve_path_to_goal(field, start, goal, unvisited_list, visited_list, path)
         end,
         ordered: false,
-        timeout: 500,
+        timeout: 200,
         on_timeout: :kill_task
       )
-      |> Enum.filter(fn {message, _result} -> message != :error and message != :exit end)
       |> Enum.find(
         {:error, nil},
         fn {message, {result_message, _waypoints, _goal}} ->

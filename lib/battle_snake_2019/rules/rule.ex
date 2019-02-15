@@ -15,7 +15,15 @@ defmodule BattleSnake2019.Rules.Rule do
     quote do
       var!(caveats, __MODULE__) = []
       result = unquote(result)
+
+      # put more specific matchers first
       @matchers [{var!(caveats, __MODULE__), result} | @matchers]
+                |> Enum.sort_by(
+                  fn {caveats, _result} ->
+                    length(caveats)
+                  end,
+                  &>=/2
+                )
     end
   end
 
@@ -27,6 +35,16 @@ defmodule BattleSnake2019.Rules.Rule do
     quote do
       var!(caveats, __MODULE__) = [
         {unquote(key), unquote(comparison), unquote(expectation)}
+        | var!(caveats, __MODULE__)
+      ]
+    end
+  end
+
+  defmacro when_value(key, comparison) do
+    # @TODO have the comparitors come from a list
+    quote do
+      var!(caveats, __MODULE__) = [
+        {unquote(key), unquote(comparison)}
         | var!(caveats, __MODULE__)
       ]
     end

@@ -21,6 +21,7 @@ defmodule BattleSnake2019.Rules.GoalMatcher do
 
   rule "when the body is small, but there is not safe food eat anything" do
     when_value(:body_size, &<=/2, 5)
+    when_value(:all_food_length, &>=/2, 0)
     when_value(:safe_food_length, &==/2, 0)
     {:all_food, :short}
   end

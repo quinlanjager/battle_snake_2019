@@ -51,7 +51,7 @@ defmodule BattleSnake2019.Pathsolver do
             solve_path_to_goal(field, start, goal, unvisited_list, visited_list, path)
         end,
         ordered: false,
-        timeout: 50,
+        timeout: 200,
         on_timeout: :kill_task
       )
       |> Enum.filter(fn {message, _result} -> message != :error and message != :exit end)
@@ -75,7 +75,9 @@ defmodule BattleSnake2019.Pathsolver do
     else
       unvisited_list =
         Nodes.get_adjacent_nodes(field, node)
-        |> Enum.filter(fn waypoint -> Waypoints.keep_waypoint?(waypoint, visited_list) end)
+        |> Enum.filter(fn waypoint ->
+          Waypoints.keep_waypoint?(waypoint, visited_list, goal)
+        end)
         |> Enum.map(fn waypoint ->
           Map.put(waypoint, :cost, Waypoints.get_cost(waypoint, node, goal))
         end)

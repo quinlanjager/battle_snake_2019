@@ -56,8 +56,12 @@ defmodule BattleSnake2019.Pathsolver do
       )
       |> Enum.find(
         {:error, nil},
-        fn {message, {result_message, _waypoints, _goal}} ->
-          result_message == :ok
+        fn
+          {message, {result_message, _waypoints, _goal}} ->
+            result_message == :ok
+
+          {_message, _} ->
+            false
         end
       )
 

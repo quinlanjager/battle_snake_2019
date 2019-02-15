@@ -31,8 +31,8 @@ defmodule BattleSnake2019.PathsolverTest do
     ]
 
     game = Map.put(example_game(), "field", field)
-    goal_spec = %{:entity => :food, :segment_type => nil}
-    move = solve_shortest_path_to_goal(field, game["you"], goal_spec)
+    goals = [%{"x" => 2, "y" => 3, entity: :food, segment_type: nil}]
+    move = solve_shortest_path_to_goal(field, game["you"], goals)
     assert move == "right"
   end
 
@@ -63,8 +63,8 @@ defmodule BattleSnake2019.PathsolverTest do
     ]
 
     game = Map.put(example_game(), "field", field)
-    goal_spec = %{:entity => :food, :segment_type => nil}
-    move = solve_shortest_path_to_goal(field, game["you"], goal_spec)
+    goals = [%{"x" => 2, "y" => 3, entity: :food, segment_type: nil}]
+    move = solve_shortest_path_to_goal(field, game["you"], goals)
     assert move == "left"
   end
 

@@ -4,10 +4,11 @@ defmodule BattleSnake2019.Pathsolver do
   alias BattleSnake2019.Field.Snake
   alias BattleSnake2019.Pathsolver.Waypoints
 
-  def solve_shortest_path_to_goal(field, snake, goal_spec) do
+  def solve_shortest_path_to_goal(field, snake, goals) do
     snake_id = snake["id"]
     start = Snake.get_segment_location(field, snake_id, :head) |> Map.put(:cost, 0)
-    paths_to_goal = find_ideal_path(field, start, goal_spec)
+
+    paths_to_goal = find_ideal_path(field, start, goals)
 
     case paths_to_goal do
       {:ok, path, goal} ->
@@ -20,10 +21,10 @@ defmodule BattleSnake2019.Pathsolver do
     end
   end
 
-  def solve_longest_path_to_goal(field, snake, goal_spec) do
+  def solve_longest_path_to_goal(field, snake, goals) do
     snake_id = snake["id"]
     start = Snake.get_segment_location(field, snake_id, :head) |> Map.put(:cost, 0)
-    paths_to_goal = find_ideal_path(field, start, goal_spec)
+    paths_to_goal = find_ideal_path(field, start, goals)
 
     case paths_to_goal do
       {:ok, path, goal} ->
@@ -37,15 +38,10 @@ defmodule BattleSnake2019.Pathsolver do
     end
   end
 
-  def find_ideal_path(field, start, goal_spec) do
-    nodes_matching_spec =
-      Enum.filter(field, fn node ->
-        Nodes.is_same_node_type?(node, goal_spec)
-      end)
-
+  def find_ideal_path(field, start, goals) do
     {_result_code, path_to_goal} =
       Task.async_stream(
-        nodes_matching_spec,
+        goals,
         fn goal ->
           unvisited_list = [Map.put(start, :cost, 0)]
           visited_list = []

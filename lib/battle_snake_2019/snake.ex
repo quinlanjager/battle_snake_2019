@@ -1,16 +1,25 @@
 defmodule BattleSnake2019.Snake do
-  import BattleSnake2019.GameServer
-  import BattleSnake2019.Pathsolver
-  alias BattleSnake2019.Field.Food
+  alias BattleSnake2019.GameServer
+  alias BattleSnake2019.Pathsolver
+  alias BattleSnake2019.Facts
+  alias BattleSnake2019.Rules.Judge
+  alias BattleSnake2019.Rules.GoalMatcher
+
   # your Snake settings
   @color "f707cb"
   @valid_moves ["right", "left", "up", "down"]
   @name "Sweetpea"
 
   def move(%{"game" => %{"id" => game_id}}) do
-    current_game = get(:game_server, game_id)
-    goal_spec = %{:entity => :food, :segment_type => nil}
-    move = solve_shortest_path_to_goal(current_game["field"], current_game["you"], goal_spec)
+    current_game = GameServer.get(:game_server, game_id)
+    game_facts = Facts.get_facts(current_game)
+    goal_name = Judge.evaluate(game_facts, GoalMatcher)
+
+    goals = Map.get(game_facts, goal_name)
+
+    move =
+      Pathsolver.solve_shortest_path_to_goal(current_game["field"], current_game["you"], goals)
+
     IO.puts("move #{move}")
     %{"move" => move}
   end

@@ -4,8 +4,8 @@ defmodule BattleSnake2019.Rules.GoalMatcherTest do
   alias BattleSnake2019.Rules.GoalMatcher
 
   test "evaluates to the food goal spec!" do
-    facts = %{"health" => 1}
+    facts = %{health: 1}
     result = Judge.evaluate(facts, GoalMatcher)
-    assert result == %{entity: :food, segment_type: nil}
+    assert result == :all_food
   end
 end

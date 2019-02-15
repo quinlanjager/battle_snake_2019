@@ -21,8 +21,6 @@ defmodule BattleSnake2019.Pathsolver.Path do
   end
 
   defp extend_pair([path1, path2] = pair, field) do
-    IO.inspect(path1)
-    IO.inspect(path2)
     direction = Waypoints.get_waypoint_direction(path2, path1)
 
     directions_to_check =
@@ -35,7 +33,6 @@ defmodule BattleSnake2019.Pathsolver.Path do
     pairs_to_add =
       Enum.map(directions_to_check, fn direction_to_check ->
         Enum.map(pair, fn path ->
-          IO.inspect(path)
           Nodes.get_adjacent_node(field, path, direction_to_check)
         end)
       end)

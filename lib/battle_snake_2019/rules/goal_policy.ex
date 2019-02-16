@@ -4,7 +4,7 @@ defmodule BattleSnake2019.Rules.GoalPolicy do
   policy :safe_food do
     weight_by(:body_size, :subtract, 6)
     weight_by(:health_lost, :subtract, 0.25)
-    weight_by(:safe_food_length, :add, 5)
+    weight_by(:safe_food_length, :add, 10)
     weight_by(:nearest_safe_food_dist, :subtract, 1)
   end
 

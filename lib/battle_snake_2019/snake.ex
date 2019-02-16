@@ -28,9 +28,6 @@ defmodule BattleSnake2019.Snake do
         Pathsolver.solve_longest_path_to_goal(current_game["field"], current_game["you"], goals)
       end
 
-    IO.puts(goal_name)
-    IO.puts(move)
-
     case move do
       nil ->
         %{"move" => Pathsolver.emergency_move(field, snake)}

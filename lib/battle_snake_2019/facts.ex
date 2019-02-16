@@ -32,6 +32,7 @@ defmodule BattleSnake2019.Facts do
     # node will be adjacent to the tail
 
     tail_is_hidden = if is_nil(tail), do: 1, else: 0
+
     tail_safety =
       if tail_is_hidden == 1,
         do: 1,
@@ -48,7 +49,7 @@ defmodule BattleSnake2019.Facts do
       safe_food: {safe_food, :short},
       tail: {[tail], :short},
       # on the first turn the tail is "stacked"
-      tail_safety: max(tail_safety, 1)
+      tail_safety: max(tail_safety, 1),
       tail_is_hidden: tail_is_hidden
     }
   end

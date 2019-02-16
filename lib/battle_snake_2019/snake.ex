@@ -21,8 +21,6 @@ defmodule BattleSnake2019.Snake do
 
     {goals, path_type} = Map.get(game_facts, goal_name)
 
-    IO.puts(goal_name)
-
     move =
       if path_type == :short do
         Pathsolver.solve_shortest_path_to_goal(current_game["field"], current_game["you"], goals)
@@ -30,13 +28,16 @@ defmodule BattleSnake2019.Snake do
         Pathsolver.solve_longest_path_to_goal(current_game["field"], current_game["you"], goals)
       end
 
-    IO.puts(move)
+    IO.puts(goal_name)
 
     case move do
       nil ->
-        %{"move" => Pathsolver.emergency_move(field, snake)}
+        emergency_move = Pathsolver.emergency_move(field, snake)
+        IO.puts("making an emergency move: #{emergency_move}")
+        %{"move" => emergency_move}
 
       _ ->
+        IO.puts("making valid move: #{move}")
         %{"move" => move}
     end
   end

@@ -58,7 +58,7 @@ defmodule BattleSnake2019.Pathsolver do
 
       _ ->
         # godspeed
-        %{"move" => "right"}
+        "right"
     end
   end
 

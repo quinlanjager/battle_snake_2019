@@ -30,8 +30,10 @@ defmodule BattleSnake2019.Facts do
     nearest_food = Enum.sort_by(ok_food, fn %{dist: dist} -> dist end, &<=/2) |> Enum.at(0, %{})
     # subtracting 1 because at least one body
     # node will be adjacent to the tail
+
+    tail_is_hidden = if is_nil(tail), do: 1, else: 0
     tail_safety =
-      if is_nil(tail),
+      if tail_is_hidden == 1,
         do: 1,
         else: Nodes.calculate_node_safety(field, tail, snake_segment_types) - 1
 
@@ -47,6 +49,7 @@ defmodule BattleSnake2019.Facts do
       tail: {[tail], :short},
       # on the first turn the tail is "stacked"
       tail_safety: max(tail_safety, 1)
+      tail_is_hidden: tail_is_hidden
     }
   end
 end

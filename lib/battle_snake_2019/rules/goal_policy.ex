@@ -17,6 +17,7 @@ defmodule BattleSnake2019.Rules.GoalPolicy do
 
   policy :tail do
     # TODO add nearest enemy snake
+    wegiht_by(:tail_is_hidden, :subtract, 200)
     weight_by(:tail_safety, :subtract, 10)
     weight(:add)
   end

@@ -5,34 +5,34 @@ defmodule BattleSnake2019.Field.Snake do
   @segment_types [:head, :body, :tail]
 
   #  process snakes
-  def process_snakes(field, [%{"body" => body, "id" => id} | rest]) do
+  def process_snakes(field, snake_head, [%{"body" => body, "id" => id} | rest]) do
     unique_nodes = Enum.uniq_by(body, fn %{"x" => x, "y" => y} -> "#{x}_#{y}" end)
 
-    process_snake_body(field, unique_nodes, id, :head)
-    |> process_snakes(rest)
+    process_snake_body(field, snake_head, unique_nodes, id, :head)
+    |> process_snakes(snake_head, rest)
   end
 
-  def process_snakes(field, []) do
+  def process_snakes(field, snake_head, []) do
     field
   end
 
-  def process_snake_body(field, [], _id) do
+  def process_snake_body(field, snake_head, [], _id) do
     field
   end
 
-  def process_snake_body(field, [segment_coords | []], id) do
-    update_node(field, segment_coords, id, :tail)
-    |> process_snake_body([], id)
+  def process_snake_body(field, snake_head, [segment_coords | []], id) do
+    update_node(field, snake_head, segment_coords, id, :tail)
+    |> process_snake_body(snake_head, [], id)
   end
 
-  def process_snake_body(field, [segment_coords | rest], id) do
-    update_node(field, segment_coords, id, :body)
-    |> process_snake_body(rest, id)
+  def process_snake_body(field, snake_head, [segment_coords | rest], id) do
+    update_node(field, snake_head, segment_coords, id, :body)
+    |> process_snake_body(snake_head, rest, id)
   end
 
-  def process_snake_body(field, [segment_coords | rest], id, :head) do
-    update_node(field, segment_coords, id, :head)
-    |> process_snake_body(rest, id)
+  def process_snake_body(field, snake_head, [segment_coords | rest], id, :head) do
+    update_node(field, snake_head, segment_coords, id, :head)
+    |> process_snake_body(snake_head, rest, id)
   end
 
   def get_segment_types do

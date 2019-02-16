@@ -56,14 +56,15 @@ defmodule BattleSnake2019.Field.Nodes do
   end
 
   # add things to field
-  def update_node(field, %{"x" => x, "y" => y}, entity, segment_type \\ nil) do
+  def update_node(field, snake_head, %{"x" => x, "y" => y} = node, entity, segment_type \\ nil) do
     node_index = Enum.find_index(field, fn node -> node["x"] == x and node["y"] == y end)
 
     updated_node =
       Enum.at(field, node_index)
       |> Map.merge(%{
         entity: entity,
-        segment_type: segment_type
+        segment_type: segment_type,
+        dist: calculate_distance(snake_head, node)
       })
 
     List.replace_at(field, node_index, updated_node)

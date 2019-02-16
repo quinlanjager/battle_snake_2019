@@ -5,12 +5,12 @@ defmodule BattleSnake2019.Field.Food do
   defstruct entity: :food, segment_type: nil
 
   # process food
-  def process_foods(field, [food_coords | rest]) do
-    Nodes.update_node(field, food_coords, :food)
-    |> process_foods(rest)
+  def process_foods(field, snake_head, [food_coords | rest]) do
+    Nodes.update_node(field, snake_head, food_coords, :food)
+    |> process_foods(snake_head, rest)
   end
 
-  def process_foods(field, []) do
+  def process_foods(field, snake_head, []) do
     field
   end
 

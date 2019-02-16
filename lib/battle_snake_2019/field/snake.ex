@@ -1,5 +1,5 @@
 defmodule BattleSnake2019.Field.Snake do
-  import BattleSnake2019.Field.Nodes
+  alias BattleSnake2019.Field.Nodes
 
   defstruct entity: nil, segment_type: nil
   @segment_types [:head, :body, :tail]
@@ -21,17 +21,17 @@ defmodule BattleSnake2019.Field.Snake do
   end
 
   def process_snake_body(field, snake_head, [segment_coords | []], id) do
-    update_node(field, snake_head, segment_coords, id, :tail)
+    Nodes.update_node(field, snake_head, segment_coords, id, :tail)
     |> process_snake_body(snake_head, [], id)
   end
 
   def process_snake_body(field, snake_head, [segment_coords | rest], id) do
-    update_node(field, snake_head, segment_coords, id, :body)
+    Nodes.update_node(field, snake_head, segment_coords, id, :body)
     |> process_snake_body(snake_head, rest, id)
   end
 
   def process_snake_body(field, snake_head, [segment_coords | rest], id, :head) do
-    update_node(field, snake_head, segment_coords, id, :head)
+    Nodes.update_node(field, snake_head, segment_coords, id, :head)
     |> process_snake_body(snake_head, rest, id)
   end
 

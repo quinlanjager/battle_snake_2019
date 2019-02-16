@@ -1,5 +1,6 @@
 defmodule BattleSnake2019.Field.Nodes do
   import Kernel
+
   @directions [["x", [1, -1]], ["y", [1, -1]]]
 
   def is_the_node?(node, other) do
@@ -16,6 +17,17 @@ defmodule BattleSnake2019.Field.Nodes do
 
   def is_same_segment?(node, other) do
     Map.get(node, :segment_type) == Map.get(other, :segment_type)
+  end
+
+  def calculate_node_safety(field, node, off_limit_segments) do
+    adjacent_nodes = get_adjacent_nodes(field, node)
+
+    Enum.count(adjacent_nodes, fn adjacent_node ->
+      is_nil(adjacent_node) or
+        Enum.any?(off_limit_segments, fn segment_type ->
+          is_same_segment?(adjacent_node, %{segment_type: segment_type})
+        end)
+    end)
   end
 
   def is_adjacent_node?(node, other) do

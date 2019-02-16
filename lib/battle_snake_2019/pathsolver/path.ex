@@ -38,8 +38,7 @@ defmodule BattleSnake2019.Pathsolver.Path do
       end)
       |> Enum.filter(fn [new_path_1, new_path_2] = set ->
         !Kernel.is_nil(new_path_1) and !Kernel.is_nil(new_path_2) and
-          Waypoints.keep_waypoint?(new_path_1, [], %{}) and
-          Waypoints.keep_waypoint?(new_path_2, [], %{})
+          Waypoints.keep_waypoint?(new_path_1) and Waypoints.keep_waypoint?(new_path_2)
       end)
 
     Enum.intersperse(pair, Enum.at(pairs_to_add, 0, []))

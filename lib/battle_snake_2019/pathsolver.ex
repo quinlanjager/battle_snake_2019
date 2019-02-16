@@ -11,12 +11,12 @@ defmodule BattleSnake2019.Pathsolver do
     paths_to_goal = find_ideal_path(field, start, goals)
 
     case paths_to_goal do
-      {:ok, path, goal} ->
+      {:ok, path, _goal} ->
         # index 0 is the start
         Waypoints.get_waypoint_direction(Enum.at(path, 1), start)
 
       nil ->
-        IO.puts("couldn't find goal")
+        nil
         # do something else :(
     end
   end
@@ -27,14 +27,38 @@ defmodule BattleSnake2019.Pathsolver do
     paths_to_goal = find_ideal_path(field, start, goals)
 
     case paths_to_goal do
-      {:ok, path, goal} ->
+      {:ok, path, _goal} ->
         extended_path = Path.extend_path(path, field)
         # index 0 is the start
-        Waypoints.get_waypoint_direction(Enum.at(path, 1), start)
+        Waypoints.get_waypoint_direction(Enum.at(extended_path, 1), start)
 
       nil ->
-        IO.puts("couldn't find goal")
+        nil
         # do something else :(
+    end
+  end
+
+  # Choose the least dangerous adjacent node
+  def emergency_move(field, snake) do
+    snake_head = Enum.at(snake["body"], 0)
+
+    adjacent_nodes =
+      Nodes.get_adjacent_nodes(field, snake_head)
+      |> Enum.filter(fn node -> Waypoints.keep_waypoint?(node) end)
+      |> Enum.map(fn node ->
+        {node, Nodes.calculate_node_safety(field, node, Snake.get_segment_types())}
+      end)
+      |> Enum.sort_by(fn {_node, safety} -> safety end, &<=/2)
+
+    best_option = Enum.at(adjacent_nodes, 0)
+
+    case best_option do
+      {choice_node, _danger} ->
+        Waypoints.get_waypoint_direction(choice_node, snake_head)
+
+      _ ->
+        # godspeed
+        %{"move" => "right"}
     end
   end
 
@@ -47,17 +71,16 @@ defmodule BattleSnake2019.Pathsolver do
           visited_list = []
           path = %{}
 
-          paths_to_goal =
-            solve_path_to_goal(field, start, goal, unvisited_list, visited_list, path)
+          solve_path_to_goal(field, start, goal, unvisited_list, visited_list, path)
         end,
         ordered: false,
-        timeout: 200,
+        timeout: 450,
         on_timeout: :kill_task
       )
       |> Enum.find(
         {:error, nil},
         fn
-          {message, {result_message, _waypoints, _goal}} ->
+          {_message, {result_message, _waypoints, _goal}} ->
             result_message == :ok
 
           {_message, _} ->
@@ -86,7 +109,7 @@ defmodule BattleSnake2019.Pathsolver do
         end)
 
       updated_path =
-        Enum.reduce(unvisited_list, path, fn %{"x" => x, "y" => y} = waypoint, soFar ->
+        Enum.reduce(unvisited_list, path, fn %{"x" => x, "y" => y}, soFar ->
           Map.put(soFar, "#{x}_#{y}", node)
         end)
 

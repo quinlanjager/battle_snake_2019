@@ -13,13 +13,15 @@ defmodule BattleSnake2019.Field do
     |> List.flatten()
   end
 
-  def update_field(field, %{"board" => board}) do
+  def update_field(field, %{"board" => board, "you" => snake}) do
+    snake_head = Enum.at(snake["body"], 0)
+
     %{
       "snakes" => snakes,
       "food" => foods
     } = board
 
-    process_foods(field, foods) |> process_snakes(snakes)
+    process_foods(field, snake_head, foods) |> process_snakes(snake_head, snakes)
   end
 
   defp build_row(row, width) do

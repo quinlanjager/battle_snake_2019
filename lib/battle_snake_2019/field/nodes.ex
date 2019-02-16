@@ -1,5 +1,6 @@
 defmodule BattleSnake2019.Field.Nodes do
   import Kernel
+
   @directions [["x", [1, -1]], ["y", [1, -1]]]
 
   def is_the_node?(node, other) do
@@ -16,6 +17,17 @@ defmodule BattleSnake2019.Field.Nodes do
 
   def is_same_segment?(node, other) do
     Map.get(node, :segment_type) == Map.get(other, :segment_type)
+  end
+
+  def calculate_node_safety(field, node, off_limit_segments) do
+    adjacent_nodes = get_adjacent_nodes(field, node)
+
+    Enum.count(adjacent_nodes, fn adjacent_node ->
+      is_nil(adjacent_node) or
+        Enum.any?(off_limit_segments, fn segment_type ->
+          is_same_segment?(adjacent_node, %{segment_type: segment_type})
+        end)
+    end)
   end
 
   def is_adjacent_node?(node, other) do
@@ -56,14 +68,15 @@ defmodule BattleSnake2019.Field.Nodes do
   end
 
   # add things to field
-  def update_node(field, %{"x" => x, "y" => y}, entity, segment_type \\ nil) do
+  def update_node(field, snake_head, %{"x" => x, "y" => y} = node, entity, segment_type \\ nil) do
     node_index = Enum.find_index(field, fn node -> node["x"] == x and node["y"] == y end)
 
     updated_node =
       Enum.at(field, node_index)
       |> Map.merge(%{
         entity: entity,
-        segment_type: segment_type
+        segment_type: segment_type,
+        dist: calculate_distance(snake_head, node)
       })
 
     List.replace_at(field, node_index, updated_node)

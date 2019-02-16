@@ -1,6 +1,10 @@
 defmodule BattleSnake2019.Pathsolver.Waypoints do
   import BattleSnake2019.Field.Nodes
 
+  def get_waypoint_direction(nil, start) do
+    nil
+  end
+
   def get_waypoint_direction(node, start) do
     key = if start["x"] == node["x"], do: "y", else: "x"
     difference = start[key] - node[key]
@@ -24,7 +28,7 @@ defmodule BattleSnake2019.Pathsolver.Waypoints do
         goal
       ) do
     waypoint_is_the_goal = is_the_node?(goal, waypoint)
-    waypoint_is_not_body = segment_type != :body and segment_type != :tail
+    waypoint_is_not_body = segment_type != :body
 
     waypoint_has_not_been_visited = !waypoint_has_been_visited?(waypoint, closed_list)
 
@@ -35,6 +39,13 @@ defmodule BattleSnake2019.Pathsolver.Waypoints do
 
   def keep_waypoint?(waypoint, closed_list, _goal),
     do: !waypoint_has_been_visited?(waypoint, closed_list)
+
+  def keep_waypoint?(%{segment_type: segment_type}),
+    do: segment_type != :body and segment_type != :tail
+
+  def keep_waypoint?(nil), do: false
+
+  def keep_waypoint?(_), do: true
 
   defp directions("y", velocity) do
     if velocity == -1, do: "down", else: "up"

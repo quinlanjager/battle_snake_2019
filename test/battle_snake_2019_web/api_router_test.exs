@@ -2,7 +2,6 @@ defmodule BattleSnake2019.Web.APIRouterTest do
   use ExUnit.Case
   use Plug.Test
   alias BattleSnake2019.Snake
-  alias BattleSnake2019.GameServer
   import Jason
 
   @opts BattleSnake2019.Web.APIRouter.init([])
@@ -18,17 +17,6 @@ defmodule BattleSnake2019.Web.APIRouterTest do
       {:ok, decoded_body} = decode(resp.resp_body)
 
       assert decoded_body == %{"color" => Snake.get_color()}
-      GameServer.delete(:game_server, "game-id-string")
-    end
-
-    test "it adds to the game server state" do
-      assert GameServer.get(:game_server, "game-id-string") == nil
-
-      conn = post_to_endpoint("/start", mock_start())
-      BattleSnake2019.Web.APIRouter.call(conn, @opts)
-
-      assert GameServer.get(:game_server, "game-id-string") != nil
-      GameServer.delete(:game_server, "game-id-string")
     end
   end
 
@@ -46,17 +34,6 @@ defmodule BattleSnake2019.Web.APIRouterTest do
 
       assert %{"move" => move} = decoded_body
       assert Enum.member?(valid_moves, move) == true
-      GameServer.delete(:game_server, "game-id-string")
-    end
-
-    test "it updates the game state" do
-      assert GameServer.get(:game_server, "game-id-string") == nil
-
-      conn = post_to_endpoint("/move", mock_start())
-      BattleSnake2019.Web.APIRouter.call(conn, @opts)
-
-      assert GameServer.get(:game_server, "game-id-string") != nil
-      GameServer.delete(:game_server, "game-id-string")
     end
   end
 
@@ -67,14 +44,6 @@ defmodule BattleSnake2019.Web.APIRouterTest do
 
       assert resp.state == :sent
       assert resp.status == 200
-    end
-
-    test "it removes the game from state" do
-      GameServer.put(:game_server, mock_start())
-      conn = post_to_endpoint("/end", mock_start())
-      BattleSnake2019.Web.APIRouter.call(conn, @opts)
-
-      assert GameServer.get(:game_server, "game-id-string") == nil
     end
   end
 

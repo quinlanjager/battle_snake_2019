@@ -4,11 +4,28 @@ defmodule BattleSnake2019.Pathsolver do
   alias BattleSnake2019.Field.Snake
   alias BattleSnake2019.Pathsolver.Waypoints
 
-  def solve_shortest_path_to_goal(field, snake, goals) do
+  def solve_shortest_path_to_goal(field, snake, goals) when is_list(goals) do
     snake_id = snake["id"]
     start = Snake.get_segment_location(field, snake_id, :head) |> Map.put(:cost, 0)
 
     paths_to_goal = find_ideal_path(field, start, goals)
+
+    case paths_to_goal do
+      {:ok, path, _goal} ->
+        # index 0 is the start
+        Waypoints.get_waypoint_direction(Enum.at(path, 1), start)
+
+      nil ->
+        nil
+        # do something else :(
+    end
+  end
+
+  def solve_shortest_path_to_goal(field, snake, goal) do
+    snake_id = snake["id"]
+    start = Snake.get_segment_location(field, snake_id, :head) |> Map.put(:cost, 0)
+
+    paths_to_goal = find_ideal_path(field, start, goal)
 
     case paths_to_goal do
       {:ok, path, _goal} ->
@@ -62,7 +79,7 @@ defmodule BattleSnake2019.Pathsolver do
     end
   end
 
-  def find_ideal_path(field, start, goals) do
+  def find_ideal_path(field, start, goals) when is_list(goals) do
     {_result_code, path_to_goal} =
       Task.async_stream(
         goals,
@@ -74,7 +91,7 @@ defmodule BattleSnake2019.Pathsolver do
           solve_path_to_goal(field, start, goal, unvisited_list, visited_list, path)
         end,
         ordered: false,
-        timeout: 450,
+        timeout: 350,
         on_timeout: :kill_task
       )
       |> Enum.find(
@@ -87,6 +104,17 @@ defmodule BattleSnake2019.Pathsolver do
             false
         end
       )
+
+    path_to_goal
+  end
+
+  def find_ideal_path(field, start, goal) do
+    unvisited_list = [Map.put(start, :cost, 0)]
+    visited_list = []
+    path = %{}
+
+    {_result_code, path_to_goal} =
+      solve_path_to_goal(field, start, goal, unvisited_list, visited_list, path)
 
     path_to_goal
   end

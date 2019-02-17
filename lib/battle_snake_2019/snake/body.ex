@@ -1,9 +1,10 @@
 defmodule BattleSnake2019.Snake.Body do
   def find_enemy_snakes(snake, snakes) do
     Enum.filter(snakes, fn other_snake ->
-      Map.get(other_snake, "id") != Map.get(good_snake, "id")
+      Map.get(other_snake, "id") != Map.get(snake, "id")
     end)
     |> Enum.map(fn other_snake ->
+      snake_head = Enum.at(snake["body"], 0)
       body = Map.get(other_snake, "body")
       body_size = length(body)
       head = Enum.at(body, 0)

@@ -4,6 +4,8 @@ defmodule BattleSnake2019.Pathsolver do
   alias BattleSnake2019.Field.Snake
   alias BattleSnake2019.Pathsolver.Waypoints
 
+  @goal_timeout 350
+
   def solve_shortest_path_to_goal(field, snake, goals) when is_list(goals) do
     snake_id = snake["id"]
     start = Snake.get_segment_location(field, snake_id, :head) |> Map.put(:cost, 0)
@@ -15,7 +17,7 @@ defmodule BattleSnake2019.Pathsolver do
         # index 0 is the start
         Waypoints.get_waypoint_direction(Enum.at(path, 1), start)
 
-      nil ->
+      _ ->
         nil
         # do something else :(
     end
@@ -25,14 +27,15 @@ defmodule BattleSnake2019.Pathsolver do
     snake_id = snake["id"]
     start = Snake.get_segment_location(field, snake_id, :head) |> Map.put(:cost, 0)
 
-    paths_to_goal = find_ideal_path(field, start, goal)
+    paths_to_goal =
+      Task.yield(Task.async(fn -> find_ideal_path(field, start, goal) end), @goal_timeout)
 
     case paths_to_goal do
-      {:ok, path, _goal} ->
+      {:ok, {:ok, path, _goal}} ->
         # index 0 is the start
         Waypoints.get_waypoint_direction(Enum.at(path, 1), start)
 
-      nil ->
+      _ ->
         nil
         # do something else :(
     end
@@ -83,15 +86,9 @@ defmodule BattleSnake2019.Pathsolver do
     {_result_code, path_to_goal} =
       Task.async_stream(
         goals,
-        fn goal ->
-          unvisited_list = [Map.put(start, :cost, 0)]
-          visited_list = []
-          path = %{}
-
-          solve_path_to_goal(field, start, goal, unvisited_list, visited_list, path)
-        end,
+        fn goal -> find_ideal_path(field, start, goal) end,
         ordered: false,
-        timeout: 350,
+        timeout: @goal_timeout,
         on_timeout: :kill_task
       )
       |> Enum.find(
@@ -113,10 +110,7 @@ defmodule BattleSnake2019.Pathsolver do
     visited_list = []
     path = %{}
 
-    {_result_code, path_to_goal} =
-      solve_path_to_goal(field, start, goal, unvisited_list, visited_list, path)
-
-    path_to_goal
+    solve_path_to_goal(field, start, goal, unvisited_list, visited_list, path)
   end
 
   def solve_path_to_goal(field, start, goal, [node | rest], visited_list, path) do

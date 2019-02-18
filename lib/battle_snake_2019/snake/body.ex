@@ -1,4 +1,6 @@
 defmodule BattleSnake2019.Snake.Body do
+  alias BattleSnake2019.Field.Nodes
+
   def find_enemy_snakes(snake, snakes) do
     Enum.filter(snakes, fn other_snake ->
       Map.get(other_snake, "id") != Map.get(snake, "id")

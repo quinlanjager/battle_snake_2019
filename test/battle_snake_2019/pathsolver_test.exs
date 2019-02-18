@@ -68,6 +68,38 @@ defmodule BattleSnake2019.PathsolverTest do
     assert move == "left"
   end
 
+  test "solves for one goal" do
+    field = [
+      %{
+        "x" => 1,
+        "y" => 1,
+        entity: :food,
+        segment_type: nil
+      },
+      %{
+        "x" => 1,
+        "y" => 2
+      },
+      %{
+        "x" => 1,
+        "y" => 3,
+        entity: "snake-id-string",
+        segment_type: :tail
+      },
+      %{"x" => 2, "y" => 1},
+      %{"x" => 2, "y" => 2, entity: "snake-id-string", segment_type: :body},
+      %{"x" => 2, "y" => 3, entity: :food, segment_type: nil},
+      %{"x" => 3, "y" => 1},
+      %{"x" => 3, "y" => 2, entity: "snake-id-string", segment_type: :body},
+      %{"x" => 3, "y" => 3, entity: "snake-id-string", segment_type: :head}
+    ]
+
+    game = Map.put(example_game(), "field", field)
+    goal = %{"x" => 2, "y" => 3, entity: :food, segment_type: nil}
+    move = solve_shortest_path_to_goal(field, game["you"], goal)
+    assert move == "left"
+  end
+
   defp example_game do
     %{
       "game" => %{

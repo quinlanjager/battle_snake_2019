@@ -20,6 +20,7 @@ defmodule BattleSnake2019.Snake do
       |> Enum.at(0)
 
     {goals, path_type} = Map.get(game_facts, goal_name)
+    IO.puts(goal_name)
 
     move =
       if path_type == :short do
@@ -27,8 +28,6 @@ defmodule BattleSnake2019.Snake do
       else
         Pathsolver.solve_longest_path_to_goal(current_game["field"], current_game["you"], goals)
       end
-
-    IO.puts(goal_name)
 
     case move do
       nil ->

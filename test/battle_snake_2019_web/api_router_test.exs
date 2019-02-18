@@ -88,6 +88,10 @@ defmodule BattleSnake2019.Web.APIRouterTest do
               %{
                 "x" => 1,
                 "y" => 3
+              },
+              %{
+                "x" => 1,
+                "y" => 3
               }
             ]
           }
@@ -98,6 +102,10 @@ defmodule BattleSnake2019.Web.APIRouterTest do
         "name" => "Sneky Snek",
         "health" => 90,
         "body" => [
+          %{
+            "x" => 1,
+            "y" => 3
+          },
           %{
             "x" => 1,
             "y" => 3

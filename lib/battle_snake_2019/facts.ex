@@ -11,7 +11,7 @@ defmodule BattleSnake2019.Facts do
     no_of_enemy_snakes = length(enemy_snakes)
 
     {enemy_head, enemy_head_distance, enemy_body_size} =
-      Enum.at(enemy_snakes, 0, {%{entity: :snake}, 1000, 1000})
+      Enum.at(enemy_snakes, 0, {%{entity: :snake}, 100_000, 0})
 
     enemy_body_difference = body_size - enemy_body_size
     all_food = Food.get_nodes(field)
@@ -30,6 +30,7 @@ defmodule BattleSnake2019.Facts do
         end
       )
 
+    head = Snake.get_segment_location(field, snake["id"], :head)
     tail = Snake.get_segment_location(field, snake["id"], :tail)
 
     nearest_safe_food =
@@ -41,13 +42,15 @@ defmodule BattleSnake2019.Facts do
 
     tail_is_hidden = if is_nil(tail), do: 1, else: 0
 
+    snake_safety = Nodes.calculate_node_safety(field, head, snake_segment_types) - 1
+
     tail_safety =
       if tail_is_hidden == 1,
         do: 1,
         else: Nodes.calculate_node_safety(field, tail, snake_segment_types) - 1
 
     %{
-      health_lost: snake["health"] - 100,
+      health_lost: 100 - snake["health"],
       safe_food_length: length(safe_food),
       all_food_length: length(ok_food),
       body_size: body_size,
@@ -62,7 +65,8 @@ defmodule BattleSnake2019.Facts do
       no_of_enemy_snakes: no_of_enemy_snakes,
       enemy_body_difference: enemy_body_difference,
       enemy_head_distance: enemy_head_distance,
-      enemy_head: {enemy_head, :short}
+      enemy_head: {enemy_head, :short},
+      snake_safety: snake_safety
     }
   end
 end

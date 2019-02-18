@@ -16,7 +16,7 @@ defmodule BattleSnake2019.SnakeTest do
     field = Field.create_field(game) |> Field.update_field(game)
     game_with_field = Map.put(game, "field", field)
     res = Snake.move(game_with_field)
-    assert Map.get(res, "move") == "left"
+    assert Map.get(res, "move") == "right"
   end
 
   def mock_hunt do

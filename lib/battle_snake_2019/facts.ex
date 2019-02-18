@@ -40,7 +40,7 @@ defmodule BattleSnake2019.Facts do
     # subtracting 1 because at least one body
     # node will be adjacent to the tail
 
-    tail_is_hidden = if is_nil(tail), do: 1, else: 0
+    tail_is_hidden = if is_nil(tail) or body_size == 3, do: 1, else: 0
 
     snake_safety = Nodes.calculate_node_safety(field, head, snake_segment_types) - 1
 

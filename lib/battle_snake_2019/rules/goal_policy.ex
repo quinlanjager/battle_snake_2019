@@ -2,8 +2,9 @@ defmodule BattleSnake2019.Rules.GoalPolicy do
   use BattleSnake2019.Rules.Policy
 
   policy :enemy_head do
-    weight_by(:enemy_head_distance, :subtract, 5)
+    weight_by(:enemy_head_distance, :subtract, 12)
     weight_by(:enemy_body_difference, :add, 15)
+    weight_by(:enemy_head_is_adjacent, :subtract, 30)
   end
 
   policy :safe_food do
@@ -21,9 +22,9 @@ defmodule BattleSnake2019.Rules.GoalPolicy do
   end
 
   policy :tail do
-    weight_by(:enemy_body_difference, :subtract)
+    weight_by(:enemy_body_difference, :subtract, 3)
     # TODO add an "omit" clause
-    weight_by(:tail_is_hidden, :subtract, 999_999)
+    weight_by(:tail_is_hidden, :subtract, 15)
     weight_by(:snake_safety, :add)
     weight(:add)
   end

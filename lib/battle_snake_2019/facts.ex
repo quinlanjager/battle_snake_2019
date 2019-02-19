@@ -10,10 +10,16 @@ defmodule BattleSnake2019.Facts do
     enemy_snakes = Body.find_enemy_snakes(snake, snakes)
     no_of_enemy_snakes = length(enemy_snakes)
 
-    {enemy_head, enemy_head_distance, enemy_body_size} =
-      Enum.at(enemy_snakes, 0, {%{entity: :snake}, 100_000, 0})
+    {enemy_head, enemy_head_distance, enemy_body_size, is_adjacent_enemy} =
+      Enum.at(enemy_snakes, 0, {%{entity: :snake}, 100_000, 0, false})
 
-    enemy_body_difference = body_size - enemy_body_size
+    # if they are the same size, treat
+    # as if it's 1 bigger
+    enemy_body_difference =
+      if body_size - enemy_body_size == 0, do: -1, else: body_size - enemy_body_size
+
+    enemy_head_is_adjacent = if is_adjacent_enemy, do: 1, else: 0
+
     all_food = Food.get_nodes(field)
 
     ok_food =
@@ -66,6 +72,7 @@ defmodule BattleSnake2019.Facts do
       enemy_body_difference: enemy_body_difference,
       enemy_head_distance: enemy_head_distance,
       enemy_head: {enemy_head, :short},
+      enemy_head_is_adjacent: enemy_head_is_adjacent,
       snake_safety: snake_safety
     }
   end

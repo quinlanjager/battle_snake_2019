@@ -60,7 +60,7 @@ defmodule BattleSnake2019.Pathsolver.Waypoints do
     do: !waypoint_has_been_visited?(waypoint, closed_list)
 
   def keep_waypoint?(%{segment_type: segment_type}),
-    do: segment_type != :body and segment_type != :tail and segment_type != :head
+    do: segment_type != :body and segment_type != :head
 
   def keep_waypoint?(nil), do: false
 

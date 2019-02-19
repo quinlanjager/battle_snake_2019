@@ -127,7 +127,7 @@ defmodule BattleSnake2019.Pathsolver do
           Waypoints.keep_waypoint?(waypoint, visited_list, goal)
         end)
         |> Enum.map(fn waypoint ->
-          Map.put(waypoint, :cost, Waypoints.get_cost(waypoint, node, goal))
+          Map.put(waypoint, :cost, Waypoints.get_cost(waypoint, node, goal, start, field))
         end)
 
       updated_path =
@@ -136,7 +136,11 @@ defmodule BattleSnake2019.Pathsolver do
         end)
 
       updated_visited_list = visited_list ++ [node]
-      updated_unvisited_list = (rest ++ unvisited_list) |> Enum.sort_by(& &1.cost, &<=/2)
+
+      updated_unvisited_list =
+        (rest ++ unvisited_list)
+        |> Enum.sort_by(& &1.cost, &<=/2)
+        |> Enum.uniq_by(fn %{:id => id} -> id end)
 
       solve_path_to_goal(
         field,

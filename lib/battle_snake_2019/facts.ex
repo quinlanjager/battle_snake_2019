@@ -71,8 +71,8 @@ defmodule BattleSnake2019.Facts do
       body_size: body_size,
       nearest_safe_food_dist: Map.get(nearest_safe_food, :dist, 0),
       nearest_food_dist: Map.get(nearest_food, :dist, 0),
-      all_food: {ok_food, :short},
-      safe_food: {safe_food, :short},
+      all_food: if length(ok_food) > 1, do: {ok_food, :short}, else: {all_food, :short}
+      safe_food: if length(safe_food) > 1, do: {safe_food, :short}, else: {ok_food, :short}
       tail: {tail, :short},
       # on the first turn the tail is "stacked"
       tail_safety: max(tail_safety, 1),

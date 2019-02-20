@@ -6,9 +6,20 @@ defmodule BattleSnake2019.Field.Snake do
 
   #  process snakes
   def process_snakes(field, snake_head, [%{"body" => body, "id" => id} | rest]) do
-    unique_nodes = Enum.uniq_by(body, fn %{"x" => x, "y" => y} -> "#{x}_#{y}" end)
+    last_snake_index = length(body) - 1
 
-    process_snake_body(field, snake_head, unique_nodes, id, :head)
+    unique_nodes =
+      Enum.with_index(body)
+      |> Enum.map(fn
+        {node, 0} ->
+          {node, :head}
+
+        {node, index} ->
+          if index == last_snake_index, do: {node, :tail}, else: {node, :body}
+      end)
+      |> Enum.uniq_by(fn {%{"x" => x, "y" => y}, _segment} -> "#{x}_#{y}" end)
+
+    process_snake_body(field, snake_head, unique_nodes, id)
     |> process_snakes(snake_head, rest)
   end
 
@@ -20,18 +31,13 @@ defmodule BattleSnake2019.Field.Snake do
     field
   end
 
-  def process_snake_body(field, snake_head, [segment_coords | []], id) do
-    Nodes.update_node(field, snake_head, segment_coords, id, :tail)
+  def process_snake_body(field, snake_head, [{segment_coords, segment} | []], id) do
+    Nodes.update_node(field, snake_head, segment_coords, id, segment)
     |> process_snake_body(snake_head, [], id)
   end
 
-  def process_snake_body(field, snake_head, [segment_coords | rest], id) do
-    Nodes.update_node(field, snake_head, segment_coords, id, :body)
-    |> process_snake_body(snake_head, rest, id)
-  end
-
-  def process_snake_body(field, snake_head, [segment_coords | rest], id, :head) do
-    Nodes.update_node(field, snake_head, segment_coords, id, :head)
+  def process_snake_body(field, snake_head, [{segment_coords, segment} | rest], id) do
+    Nodes.update_node(field, snake_head, segment_coords, id, segment)
     |> process_snake_body(snake_head, rest, id)
   end
 

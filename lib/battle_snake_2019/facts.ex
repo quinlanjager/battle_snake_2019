@@ -23,7 +23,7 @@ defmodule BattleSnake2019.Facts do
     no_of_enemy_nearby =
       Enum.count(
         enemy_snakes,
-        fn {_enemy_head, enemy_head_distance, _enemy_body_size} ->
+        fn {_enemy_head, enemy_head_distance, _enemy_body_size, _is_adjacent_enemy} ->
           enemy_head_distance < 4
         end
       )
@@ -56,7 +56,7 @@ defmodule BattleSnake2019.Facts do
     # subtracting 1 because at least one body
     # node will be adjacent to the tail
 
-    tail_is_hidden = if is_nil(tail) or body_size == 3, do: 1, else: 0
+    tail_is_hidden = if is_nil(tail), do: 1, else: 0
 
     snake_safety = Nodes.calculate_node_safety(field, head, snake_segment_types) - 1
 

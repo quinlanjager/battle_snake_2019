@@ -9,18 +9,18 @@ defmodule BattleSnake2019.Rules.GoalPolicy do
 
   policy :safe_food do
     # if the nearest enemy is bigger you need to eat!!
-    weight_by(:enemy_body_difference, :subtract, 3)
-    weight_by(:body_size, :subtract, 1.25)
-    weight_by(:health_lost, :add, 1.5)
-    weight_by(:safe_food_length, :add, 0.5)
-    weight_by(:nearest_safe_food_dist, :subtract, 0.5)
+    weight_by(:enemy_body_difference, :subtract, 5)
+    weight_by(:body_size, :subtract)
+    weight_by(:health_lost, :add)
+    weight_by(:safe_food_length, :add, 2)
+    weight_by(:nearest_safe_food_dist, :subtract)
   end
 
   policy :all_food do
-    weight_by(:enemy_body_difference, :subtract, 3)
-    weight_by(:body_size, :subtract, 2)
-    weight_by(:health_lost, :add, 1.75)
-    weight_by(:all_food_length, :add, 0.12)
+    weight_by(:enemy_body_difference, :subtract, 5)
+    weight_by(:body_size, :subtract)
+    weight_by(:health_lost, :add)
+    weight_by(:all_food_length, :add)
     weight_by(:nearest_food_dist, :subtract)
   end
 

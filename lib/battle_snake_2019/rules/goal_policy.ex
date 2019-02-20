@@ -25,6 +25,7 @@ defmodule BattleSnake2019.Rules.GoalPolicy do
   end
 
   policy :tail do
+    weight_by(:no_ok_food, :add, 20)
     weight_by(:no_of_enemy_nearby, :add, 2)
     # TODO add an "omit" clause
     weight_by(:tail_is_hidden, :subtract, 999_999)

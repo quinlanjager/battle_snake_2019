@@ -30,6 +30,9 @@ defmodule BattleSnake2019.Facts do
 
     {ok_food, safe_food} = find_food_facts(field, snake_segment_types, snake)
 
+    no_ok_food = if length(ok_food) < 1, do: 1, else: 0
+    no_safe_food = if length(no_safe_food) < 1, do: 1, else: 0
+
     enemy_body_difference = body_size - enemy_body_size
 
     head = Snake.get_segment_location(field, snake["id"], :head)
@@ -55,6 +58,8 @@ defmodule BattleSnake2019.Facts do
       health_lost: 100 - snake["health"],
       safe_food_length: length(safe_food),
       all_food_length: length(ok_food),
+      no_ok_food: no_ok_food,
+      no_safe_food: no_safe_food,
       body_size: body_size,
       nearest_safe_food_dist: Map.get(nearest_safe_food, :dist, 0),
       nearest_food_dist: Map.get(nearest_food, :dist, 0),

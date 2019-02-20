@@ -93,8 +93,6 @@ defmodule BattleSnake2019.Facts do
         end
       )
 
-    ok_food_result = if length(ok_food) > 1, do: ok_food, else: all_food
-    safe_food_result = if length(safe_food) > 1, do: safe_food, else: ok_food
-    {ok_food_result, safe_food_result}
+    {ok_food, safe_food}
   end
 end

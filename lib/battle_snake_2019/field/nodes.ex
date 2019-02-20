@@ -38,6 +38,15 @@ defmodule BattleSnake2019.Field.Nodes do
     is_adjacent_horizontally or is_adjacent_vertically
   end
 
+  def is_segment_adjacent_node?(field, node, type, omitted_entities \\ []) do
+    get_adjacent_nodes(field, node)
+    |> Enum.filter(&is_map/1)
+    |> Enum.any?(fn adj_node ->
+      Map.get(adj_node, :segment_type) == type and
+        !Enum.member?(omitted_entities, Map.get(adj_node, :entity))
+    end)
+  end
+
   def calculate_distance(node, other) do
     %{"x" => x_difference, "y" => y_diffrence} = get_distance(node, other)
     :math.sqrt(:math.pow(x_difference, 2) + :math.pow(y_diffrence, 2))

@@ -85,7 +85,7 @@ defmodule BattleSnake2019.Facts do
     ok_food =
       Enum.filter(all_food, fn food ->
         # TODO have this think criticaly re: size of snake
-        Nodes.is_segment_adjacent_node?(field, food, :head, [snake["id"]]) and
+        !Nodes.is_segment_adjacent_node?(field, food, :head, [snake["id"]]) and
           Nodes.calculate_node_safety(field, food, snake_segment_types) < 3
       end)
 
@@ -93,7 +93,7 @@ defmodule BattleSnake2019.Facts do
       Enum.filter(
         all_food,
         fn food ->
-          Nodes.is_segment_adjacent_node?(field, food, :head, [snake["id"]]) and
+          !Nodes.is_segment_adjacent_node?(field, food, :head, [snake["id"]]) and
             Nodes.calculate_node_safety(field, food, snake_segment_types) == 0
         end
       )

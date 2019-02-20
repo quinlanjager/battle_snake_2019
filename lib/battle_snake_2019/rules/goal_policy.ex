@@ -17,7 +17,7 @@ defmodule BattleSnake2019.Rules.GoalPolicy do
   end
 
   policy :all_food do
-    weight_by(:enemy_body_difference, :subtract, 10)
+    weight_by(:enemy_body_difference, :subtract, 3)
     weight_by(:body_size, :subtract, 2)
     weight_by(:health_lost, :add, 1.75)
     weight_by(:all_food_length, :add, 0.10)

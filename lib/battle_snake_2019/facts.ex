@@ -20,6 +20,16 @@ defmodule BattleSnake2019.Facts do
 
     enemy_head_is_adjacent = if is_adjacent_enemy, do: 1, else: 0
 
+    no_of_enemy_nearby =
+      Enum.count(
+        enemy_snakes,
+        fn {_enemy_head, enemy_head_distance, _enemy_body_size, _is_adjacent_enemy} ->
+          enemy_head_distance < 4
+        end
+      )
+
+    enemy_body_difference = body_size - enemy_body_size
+
     all_food = Food.get_nodes(field)
 
     ok_food =
@@ -46,7 +56,7 @@ defmodule BattleSnake2019.Facts do
     # subtracting 1 because at least one body
     # node will be adjacent to the tail
 
-    tail_is_hidden = if is_nil(tail) or body_size == 3, do: 1, else: 0
+    tail_is_hidden = if is_nil(tail), do: 1, else: 0
 
     snake_safety = Nodes.calculate_node_safety(field, head, snake_segment_types) - 1
 
@@ -69,6 +79,7 @@ defmodule BattleSnake2019.Facts do
       tail_safety: max(tail_safety, 1),
       tail_is_hidden: tail_is_hidden,
       no_of_enemy_snakes: no_of_enemy_snakes,
+      no_of_enemy_nearby: no_of_enemy_nearby,
       enemy_body_difference: enemy_body_difference,
       enemy_head_distance: enemy_head_distance,
       enemy_head: {enemy_head, :short},

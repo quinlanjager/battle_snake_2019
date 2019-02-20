@@ -4,7 +4,7 @@ defmodule BattleSnake2019.Pathsolver do
   alias BattleSnake2019.Field.Snake
   alias BattleSnake2019.Pathsolver.Waypoints
 
-  @goal_timeout 350
+  @goal_timeout 650
 
   def solve_shortest_path_to_goal(field, snake, goals) when is_list(goals) do
     snake_id = snake["id"]

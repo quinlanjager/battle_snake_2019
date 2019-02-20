@@ -30,7 +30,8 @@ defmodule BattleSnake2019.Pathsolver.Waypoints do
     is_adjacent_to_head =
       Nodes.is_segment_adjacent_node?(field, waypoint, :head, omitted_entities)
 
-    raw_heuristic = heuristic + current_node.cost
+    node_safety = Nodes.calculate_node_safety(field, waypoint, [:tail, :body]) * 2
+    raw_heuristic = heuristic + current_node.cost + node_safety
 
     # if we're adjacent to an enemy head
     # Only go there at a last resort

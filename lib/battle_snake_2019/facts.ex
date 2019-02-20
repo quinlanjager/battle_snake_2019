@@ -28,7 +28,7 @@ defmodule BattleSnake2019.Facts do
         end
       )
 
-    {ok_food, safe_food} = find_food_facts(field, snake_segment_types)
+    {ok_food, safe_food} = find_food_facts(field, snake_segment_types, snake)
 
     enemy_body_difference = body_size - enemy_body_size
 
@@ -74,19 +74,21 @@ defmodule BattleSnake2019.Facts do
     }
   end
 
-  def find_food_facts(field, snake_segment_types) do
+  def find_food_facts(field, snake_segment_types, snake) do
     all_food = Food.get_nodes(field)
 
     ok_food =
       Enum.filter(all_food, fn food ->
-        Nodes.calculate_node_safety(field, food, snake_segment_types) < 2
+        Nodes.is_segment_adjacent_node?(field, food, :head, [snake["id"]]) and
+          Nodes.calculate_node_safety(field, food, snake_segment_types) < 2
       end)
 
     safe_food =
       Enum.filter(
         all_food,
         fn food ->
-          Nodes.calculate_node_safety(field, food, snake_segment_types) == 0
+          Nodes.is_segment_adjacent_node?(field, food, :head, [snake["id"]]) and
+            Nodes.calculate_node_safety(field, food, snake_segment_types) == 0
         end
       )
 

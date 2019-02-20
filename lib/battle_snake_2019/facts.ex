@@ -28,7 +28,7 @@ defmodule BattleSnake2019.Facts do
         end
       )
 
-    {ok_food, safe_food) = find_food_facts(field, snake_segment_types)
+    {ok_food, safe_food} = find_food_facts(field, snake_segment_types)
 
     enemy_body_difference = body_size - enemy_body_size
 
@@ -58,8 +58,8 @@ defmodule BattleSnake2019.Facts do
       body_size: body_size,
       nearest_safe_food_dist: Map.get(nearest_safe_food, :dist, 0),
       nearest_food_dist: Map.get(nearest_food, :dist, 0),
-      all_food: ok_food,
-      safe_food: safe_food,
+      all_food: {ok_food, :short},
+      safe_food: {safe_food, :short},
       tail: {tail, :short},
       # on the first turn the tail is "stacked"
       tail_safety: max(tail_safety, 1),
@@ -90,8 +90,8 @@ defmodule BattleSnake2019.Facts do
         end
       )
 
-    ok_food_result = if length(ok_food) > 1, do: {ok_food, :short}, else: {all_food, :short}
-    safe_food_result = if length(safe_food) > 1, do: {safe_food, :short}, else: {ok_food, :short}
+    ok_food_result = if length(ok_food) > 1, do: ok_food, else: all_food
+    safe_food_result = if length(safe_food) > 1, do: safe_food, else: ok_food
     {ok_food_result, safe_food_result}
   end
 end

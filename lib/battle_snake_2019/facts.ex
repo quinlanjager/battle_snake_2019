@@ -28,22 +28,9 @@ defmodule BattleSnake2019.Facts do
         end
       )
 
+    {ok_food, safe_food) = find_food_facts(field, snake_segment_types)
+
     enemy_body_difference = body_size - enemy_body_size
-
-    all_food = Food.get_nodes(field)
-
-    ok_food =
-      Enum.filter(all_food, fn food ->
-        Nodes.calculate_node_safety(field, food, snake_segment_types) < 2
-      end)
-
-    safe_food =
-      Enum.filter(
-        all_food,
-        fn food ->
-          Nodes.calculate_node_safety(field, food, snake_segment_types) == 0
-        end
-      )
 
     head = Snake.get_segment_location(field, snake["id"], :head)
     tail = Snake.get_segment_location(field, snake["id"], :tail)
@@ -71,8 +58,8 @@ defmodule BattleSnake2019.Facts do
       body_size: body_size,
       nearest_safe_food_dist: Map.get(nearest_safe_food, :dist, 0),
       nearest_food_dist: Map.get(nearest_food, :dist, 0),
-      all_food: if length(ok_food) > 1, do: {ok_food, :short}, else: {all_food, :short}
-      safe_food: if length(safe_food) > 1, do: {safe_food, :short}, else: {ok_food, :short}
+      all_food: ok_food,
+      safe_food: safe_food,
       tail: {tail, :short},
       # on the first turn the tail is "stacked"
       tail_safety: max(tail_safety, 1),
@@ -85,5 +72,26 @@ defmodule BattleSnake2019.Facts do
       enemy_head_is_adjacent: enemy_head_is_adjacent,
       snake_safety: snake_safety
     }
+  end
+
+  def find_food_facts(field, snake_segment_types) do
+    all_food = Food.get_nodes(field)
+
+    ok_food =
+      Enum.filter(all_food, fn food ->
+        Nodes.calculate_node_safety(field, food, snake_segment_types) < 2
+      end)
+
+    safe_food =
+      Enum.filter(
+        all_food,
+        fn food ->
+          Nodes.calculate_node_safety(field, food, snake_segment_types) == 0
+        end
+      )
+
+    ok_food_result = if length(ok_food) > 1, do: {ok_food, :short}, else: {all_food, :short}
+    safe_food_result = if length(safe_food) > 1, do: {safe_food, :short}, else: {ok_food, :short}
+    {ok_food_result, safe_food_result}
   end
 end

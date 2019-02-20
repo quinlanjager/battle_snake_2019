@@ -23,6 +23,7 @@ defmodule BattleSnake2019.Rules.GoalPolicy do
 
   policy :tail do
     weight_by(:enemy_body_difference, :subtract, 3)
+    weight_by(:no_of_enemy_nearby, :add, 2)
     # TODO add an "omit" clause
     weight_by(:tail_is_hidden, :subtract, 15)
     weight_by(:snake_safety, :add)

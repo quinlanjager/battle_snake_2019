@@ -48,8 +48,8 @@ defmodule BattleSnake2019.Field.Nodes do
   end
 
   def calculate_distance(node, other) do
-    %{"x" => x_difference, "y" => y_diffrence} = get_distance(node, other)
-    :math.sqrt(:math.pow(x_difference, 2) + :math.pow(y_diffrence, 2))
+    %{"x" => x_difference, "y" => y_difference} = get_distance(node, other)
+    :math.sqrt(:math.pow(x_difference, 2) + :math.pow(y_difference, 2))
   end
 
   def get_adjacent_nodes(field, node) do

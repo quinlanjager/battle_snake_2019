@@ -1,5 +1,6 @@
 defmodule BattleSnake2019.Snake.Body do
   alias BattleSnake2019.Field.Nodes
+  alias BattleSnake2019.Pathsolver.Waypoints
 
   def find_enemy_snakes(snake, snakes) do
     Enum.filter(snakes, fn other_snake ->
@@ -24,5 +25,21 @@ defmodule BattleSnake2019.Snake.Body do
 
   def get_body_size(%{"body" => body}) do
     length(body)
+  end
+
+  def get_false_tail(%{"id" => id, "body" => body}, field) do
+    last_segment = List.last(body)
+    omitted_types = [:body, :head, :tail]
+
+    adjacent_nodes =
+      Nodes.get_adjacent_nodes(field, last_segment)
+      |> Enum.filter(&Waypoints.keep_waypoint?/1)
+      |> Enum.map(fn node ->
+        {node, Nodes.calculate_node_safety(field, node, omitted_types)}
+      end)
+      |> Enum.sort_by(fn {_node, safety} -> safety end, &<=/2)
+
+    {tail, _} = Enum.at(adjacent_nodes, 0)
+    Map.put(tail, :segment_type, :tail) |> Map.put(:entity, id)
   end
 end

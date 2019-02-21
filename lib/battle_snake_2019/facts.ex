@@ -38,29 +38,37 @@ defmodule BattleSnake2019.Facts do
         end
       )
 
-    {ok_food, safe_food} = find_food_facts(field, snake_segment_types, snake)
-
-    no_ok_food = if length(ok_food) < 1, do: 1, else: 0
-    no_safe_food = if length(safe_food) < 1, do: 1, else: 0
-
     enemy_body_difference = body_size - enemy_body_size
 
     head = Snake.get_segment_location(field, snake["id"], :head)
-    tail = Snake.get_segment_location(field, snake["id"], :tail)
+    maybe_tail = Snake.get_segment_location(field, snake["id"], :tail)
+
+    tail = if is_nil(maybe_tail), do: Body.get_false_tail(snake, field), else: maybe_tail
+
+    no_tail = if is_nil(tail), do: 1, else: 0
+
+    {ok_food_result, safe_food_result} = find_food_facts(field, snake_segment_types, snake)
+
+    no_ok_food = if length(ok_food_result) < 1, do: 1, else: 0
+    no_safe_food = if length(safe_food_result) < 1, do: 1, else: 0
 
     nearest_safe_food =
-      Enum.sort_by(safe_food, fn %{dist: dist} -> dist end, &<=/2) |> Enum.at(0, %{entity: :food})
+      Enum.sort_by(safe_food_result, fn %{dist: dist} -> dist end, &<=/2)
+      |> Enum.at(0, %{entity: :food})
 
-    nearest_food = Enum.sort_by(ok_food, fn %{dist: dist} -> dist end, &<=/2) |> Enum.at(0, %{})
+    nearest_food =
+      Enum.sort_by(ok_food_result, fn %{dist: dist} -> dist end, &<=/2) |> Enum.at(0, %{})
+
+    ok_food = if no_ok_food == 1 and no_tail == 0, do: [tail], else: ok_food_result
+    safe_food = if no_safe_food == 1 and no_tail == 0, do: [tail], else: safe_food_result
+
     # subtracting 1 because at least one body
     # node will be adjacent to the tail
-
-    tail_is_hidden = if is_nil(tail), do: 1, else: 0
 
     snake_safety = Nodes.calculate_node_safety(field, head, snake_segment_types) - 1
 
     tail_safety =
-      if tail_is_hidden == 1,
+      if no_tail == 1,
         do: 1,
         else: Nodes.calculate_node_safety(field, tail, snake_segment_types) - 1
 
@@ -78,7 +86,7 @@ defmodule BattleSnake2019.Facts do
       tail: {tail, :short},
       # on the first turn the tail is "stacked"
       tail_safety: max(tail_safety, 1),
-      tail_is_hidden: tail_is_hidden,
+      no_tail: no_tail,
       no_of_enemy_snakes: no_of_enemy_snakes,
       no_of_enemy_nearby: no_of_enemy_nearby,
       largest_body_difference: largest_body_difference,

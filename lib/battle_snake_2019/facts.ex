@@ -59,8 +59,8 @@ defmodule BattleSnake2019.Facts do
     nearest_food =
       Enum.sort_by(ok_food_result, fn %{dist: dist} -> dist end, &<=/2) |> Enum.at(0, %{})
 
-    ok_food = if no_ok_food == 1 and tail_is_hidden == 0, do: [tail], else: ok_food_result
-    safe_food = if no_safe_food == 1 and tail_is_hidden == 0, do: [tail], else: safe_food_result
+    ok_food = if no_ok_food == 1 and no_tail == 0, do: [tail], else: ok_food_result
+    safe_food = if no_safe_food == 1 and no_tail == 0, do: [tail], else: safe_food_result
 
     # subtracting 1 because at least one body
     # node will be adjacent to the tail
@@ -68,7 +68,7 @@ defmodule BattleSnake2019.Facts do
     snake_safety = Nodes.calculate_node_safety(field, head, snake_segment_types) - 1
 
     tail_safety =
-      if tail_is_hidden == 1,
+      if no_tail == 1,
         do: 1,
         else: Nodes.calculate_node_safety(field, tail, snake_segment_types) - 1
 

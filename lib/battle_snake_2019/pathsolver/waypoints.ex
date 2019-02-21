@@ -49,8 +49,7 @@ defmodule BattleSnake2019.Pathsolver.Waypoints do
       ) do
     waypoint_is_the_goal = Nodes.is_the_node?(goal, waypoint)
 
-    waypoint_is_not_body =
-      segment_type != :body and segment_type != :head and segment_type != :tail
+    waypoint_is_not_body = segment_type != :body and segment_type != :head
 
     waypoint_has_not_been_visited = !waypoint_has_been_visited?(waypoint, closed_list)
 

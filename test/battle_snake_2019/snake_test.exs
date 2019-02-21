@@ -11,91 +11,114 @@ defmodule BattleSnake2019.SnakeTest do
     assert is_binary(Map.get(res, "move"))
   end
 
-  test "hunts snake" do
-    enemy_snake_body = [
-      %{
-        "x" => 0,
-        "y" => 2
-      },
-      %{
-        "x" => 0,
-        "y" => 2
-      }
-    ]
+  describe "avoiding heads, and eating them" do
+    test "only avoids snake heads that are larger" do
+      enemy_snake_bodies = [
+        [
+          %{"x" => 0, "y" => 3},
+          %{"x" => 0, "y" => 2},
+          %{"x" => 0, "y" => 1},
+          %{"x" => 0, "y" => 0},
+          %{"x" => 1, "y" => 0},
+          %{"x" => 2, "y" => 0},
+          %{"x" => 2, "y" => 1}
+        ],
+        [
+          %{"x" => 3, "y" => 2},
+          %{"x" => 3, "y" => 1},
+          %{"x" => 3, "y" => 0}
+        ]
+      ]
 
-    game = mock_hunt(enemy_snake_body)
-    field = Field.create_field(game) |> Field.update_field(game)
-    game_with_field = Map.put(game, "field", field)
-    res = Snake.move(game_with_field)
-    assert Map.get(res, "move") == "down"
-  end
+      my_snake = [
+        %{"x" => 2, "y" => 3},
+        %{"x" => 3, "y" => 3},
+        %{"x" => 4, "y" => 3},
+        %{"x" => 5, "y" => 3},
+        %{"x" => 5, "y" => 2}
+      ]
 
-  test "doesnt go for adjacent snake" do
-    enemy_snake_body = [
-      %{
-        "x" => 1,
-        "y" => 2
-      },
-      %{
-        "x" => 0,
-        "y" => 2
-      },
-      %{
-        "x" => 0,
-        "y" => 2
-      }
-    ]
+      food = [
+        %{"x" => 1, "y" => 2}
+      ]
 
-    game = mock_hunt(enemy_snake_body)
-    field = Field.create_field(game) |> Field.update_field(game)
-    game_with_field = Map.put(game, "field", field)
-    res = Snake.move(game_with_field)
-    assert Map.get(res, "move") != "up"
-  end
+      dimensions = {4, 6}
 
-  def mock_hunt(enemy_snake_body) do
-    %{
-      "game" => %{
-        "id" => "game-id-string"
-      },
-      "turn" => 1,
-      "board" => %{
-        "height" => 15,
-        "width" => 15,
-        "food" => [],
-        "snakes" => [
+      game = mock_game(enemy_snake_bodies, my_snake, food, dimensions)
+
+      field = Field.create_field(game) |> Field.update_field(game)
+      game_with_field = Map.put(game, "field", field)
+      res = Snake.move(game_with_field)
+      assert Map.get(res, "move") == "up"
+    end
+
+    test "Avoids bigger heads when making emergency moves" do
+      enemy_snake_bodies = [
+        [
+          %{"x" => 0, "y" => 3},
+          %{"x" => 0, "y" => 2},
+          %{"x" => 0, "y" => 1},
+          %{"x" => 0, "y" => 0},
+          %{"x" => 1, "y" => 0},
+          %{"x" => 2, "y" => 0},
+          %{"x" => 2, "y" => 1}
+        ],
+        [
+          %{"x" => 3, "y" => 2},
+          %{"x" => 3, "y" => 1},
+          %{"x" => 3, "y" => 0}
+        ]
+      ]
+
+      my_snake = [
+        %{"x" => 2, "y" => 3},
+        %{"x" => 3, "y" => 3},
+        %{"x" => 4, "y" => 3},
+        %{"x" => 5, "y" => 3},
+        %{"x" => 5, "y" => 2}
+      ]
+
+      food = []
+
+      dimensions = {4, 6}
+
+      game = mock_game(enemy_snake_bodies, my_snake, food, dimensions)
+
+      field = Field.create_field(game) |> Field.update_field(game)
+      game_with_field = Map.put(game, "field", field)
+      res = Snake.move(game_with_field)
+      assert Map.get(res, "move") == "up"
+    end
+
+    test "doesnt go for adjacent snake" do
+      enemy_snake_body = [
+        [
           %{
-            "id" => "snake-id-string",
-            "name" => "Sneky Snek",
-            "health" => 100,
-            "body" => [
-              %{
-                "x" => 1,
-                "y" => 3
-              },
-              %{
-                "x" => 0,
-                "y" => 3
-              },
-              %{
-                "x" => 0,
-                "y" => 3
-              }
-            ]
+            "x" => 1,
+            "y" => 2
           },
           %{
-            "id" => "other-snake",
-            "name" => "Sneky Snek",
-            "health" => 100,
-            "body" => enemy_snake_body
+            "x" => 0,
+            "y" => 2
+          },
+          %{
+            "x" => 0,
+            "y" => 2
           }
         ]
-      },
-      "you" => %{
-        "id" => "snake-id-string",
-        "name" => "Sneky Snek",
-        "health" => 100,
-        "body" => [
+      ]
+
+      game = mock_game(enemy_snake_body)
+      field = Field.create_field(game) |> Field.update_field(game)
+      game_with_field = Map.put(game, "field", field)
+      res = Snake.move(game_with_field)
+      assert Map.get(res, "move") != "up"
+    end
+  end
+
+  def mock_game(
+        enemy_snake_bodies,
+        my_snake_body \\ [
           %{
             "x" => 1,
             "y" => 3
@@ -108,8 +131,39 @@ defmodule BattleSnake2019.SnakeTest do
             "x" => 0,
             "y" => 3
           }
-        ]
-      }
+        ],
+        food \\ [],
+        {height, width} \\ {15, 15}
+      ) do
+    snakes =
+      Enum.map(enemy_snake_bodies, fn body ->
+        %{
+          "id" => "snake-#{:random.uniform(1000)}",
+          "name" => "enemy",
+          "health" => 100,
+          "body" => body
+        }
+      end)
+
+    you = %{
+      "id" => "snake-id-string",
+      "name" => "Sneky Snek",
+      "health" => 100,
+      "body" => my_snake_body
+    }
+
+    %{
+      "game" => %{
+        "id" => "game-id-string"
+      },
+      "turn" => 1,
+      "board" => %{
+        "height" => height,
+        "width" => width,
+        "food" => food,
+        "snakes" => snakes ++ [you]
+      },
+      "you" => you
     }
   end
 

@@ -41,9 +41,12 @@ defmodule BattleSnake2019.Facts do
     enemy_body_difference = body_size - enemy_body_size
 
     head = Snake.get_segment_location(field, snake["id"], :head)
-    tail = Snake.get_segment_location(field, snake["id"], :tail)
+    maybe_tail = Snake.get_segment_location(field, snake["id"], :tail)
 
-    tail_is_hidden = if is_nil(tail), do: 1, else: 0
+    tail = if is_nil(maybe_tail), do: Body.get_false_tail(snake, field), else: maybe_tail
+
+    no_tail = if is_nil(tail), do: 1, else: 0
+
     {ok_food_result, safe_food_result} = find_food_facts(field, snake_segment_types, snake)
 
     no_ok_food = if length(ok_food_result) < 1, do: 1, else: 0
@@ -83,7 +86,7 @@ defmodule BattleSnake2019.Facts do
       tail: {tail, :short},
       # on the first turn the tail is "stacked"
       tail_safety: max(tail_safety, 1),
-      tail_is_hidden: tail_is_hidden,
+      no_tail: no_tail,
       no_of_enemy_snakes: no_of_enemy_snakes,
       no_of_enemy_nearby: no_of_enemy_nearby,
       largest_body_difference: largest_body_difference,

@@ -8,6 +8,7 @@ defmodule BattleSnake2019.Rules.Judge do
           reduce_weight(weight, weight_so_far, facts)
         end)
 
+      IO.inspect({fact_key, fact_weight})
       {fact_key, fact_weight}
     end)
   end

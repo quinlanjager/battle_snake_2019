@@ -39,7 +39,7 @@ defmodule BattleSnake2019.Snake.Body do
       end)
       |> Enum.sort_by(fn {_node, safety} -> safety end, &<=/2)
 
-    {tail, _} = Enum.at(adjacent_nodes, 0)
+    {tail, _} = Enum.at(adjacent_nodes, 0, {nil, 0})
     Map.put(tail, :segment_type, :tail) |> Map.put(:entity, id)
   end
 end

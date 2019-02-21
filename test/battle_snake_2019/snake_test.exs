@@ -17,16 +17,17 @@ defmodule BattleSnake2019.SnakeTest do
         [
           %{"x" => 0, "y" => 3},
           %{"x" => 0, "y" => 2},
-          %{"x" => 0, "y" => 1},
-          %{"x" => 0, "y" => 0},
-          %{"x" => 1, "y" => 0},
-          %{"x" => 2, "y" => 0},
-          %{"x" => 2, "y" => 1}
+          %{"x" => 0, "y" => 1}
         ],
         [
           %{"x" => 3, "y" => 2},
           %{"x" => 3, "y" => 1},
-          %{"x" => 3, "y" => 0}
+          %{"x" => 3, "y" => 0},
+          %{"x" => 4, "y" => 0},
+          %{"x" => 5, "y" => 0},
+          %{"x" => 5, "y" => 1},
+          %{"x" => 4, "y" => 1},
+          %{"x" => 4, "y" => 2}
         ]
       ]
 
@@ -49,7 +50,7 @@ defmodule BattleSnake2019.SnakeTest do
       field = Field.create_field(game) |> Field.update_field(game)
       game_with_field = Map.put(game, "field", field)
       res = Snake.move(game_with_field)
-      assert Map.get(res, "move") == "up"
+      assert Map.get(res, "move") == "left"
     end
 
     test "Avoids bigger heads when making emergency moves" do

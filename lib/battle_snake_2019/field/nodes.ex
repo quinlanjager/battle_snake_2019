@@ -19,7 +19,7 @@ defmodule BattleSnake2019.Field.Nodes do
     Map.get(node, :segment_type) == Map.get(other, :segment_type)
   end
 
-  def calculate_node_safety(field, node, off_limit_segments) do
+  def calculate_node_safety(field, node, off_limit_segments \\ []) do
     adjacent_nodes = get_adjacent_nodes(field, node)
 
     Enum.count(adjacent_nodes, fn adjacent_node ->

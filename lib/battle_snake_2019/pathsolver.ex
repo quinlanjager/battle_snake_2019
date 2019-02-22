@@ -43,8 +43,9 @@ defmodule BattleSnake2019.Pathsolver do
   end
 
   # Choose the least dangerous adjacent node
-  def emergency_move(%{"field" => field} = game, snake) do
-    snake_head = Enum.at(snake["body"], 0)
+  def emergency_move(%{"field" => field} = game, %{"body" => body}) do
+    snake_head = List.first(body)
+    snake_tail = List.last(body)
 
     adjacent_nodes =
       Nodes.get_adjacent_nodes(field, snake_head)
@@ -52,12 +53,16 @@ defmodule BattleSnake2019.Pathsolver do
       |> Enum.map(fn node ->
         {node, Nodes.calculate_node_safety(field, node, Snake.get_segment_types())}
       end)
-      |> Enum.sort_by(fn {_node, safety} -> safety end, &<=/2)
+      |> Enum.filter(fn {_node, safety} -> safety < 4 end)
 
-    best_option = Enum.at(adjacent_nodes, 0)
+    best_option =
+      Enum.sort_by(adjacent_nodes, fn {node, _safety} ->
+        Nodes.calculate_distance(snake_tail, node)
+      end)
+      |> List.first()
 
     case best_option do
-      {choice_node, _danger} ->
+      {choice_node, _safety} ->
         Waypoints.get_waypoint_direction(choice_node, snake_head)
 
       _ ->

@@ -31,7 +31,7 @@ defmodule BattleSnake2019.Snake.Body do
 
   def get_false_tail(%{"id" => id, "body" => body}, %{"field" => field} = game) do
     last_segment = List.last(body)
-    omitted_types = [:body, :head, :tail]
+    omitted_types = [:body, :head]
 
     adjacent_nodes =
       Nodes.get_adjacent_nodes(field, last_segment)

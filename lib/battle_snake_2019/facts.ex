@@ -47,7 +47,7 @@ defmodule BattleSnake2019.Facts do
 
     no_tail = if is_nil(tail), do: 1, else: 0
 
-    {ok_food_result, safe_food_result} = find_food_facts(field, snake_segment_types, snake)
+    {ok_food_result, safe_food_result} = find_food_facts(game, snake_segment_types)
 
     no_ok_food = if length(ok_food_result) < 1, do: 1, else: 0
     no_safe_food = if length(safe_food_result) < 1, do: 1, else: 0
@@ -98,22 +98,26 @@ defmodule BattleSnake2019.Facts do
     }
   end
 
-  def find_food_facts(field, snake_segment_types, snake) do
-    all_food = Food.get_nodes(field)
+  def find_food_facts(
+        %{"field" => field, "you" => snake, "board" => %{"snakes" => snakes}},
+        snake_segment_types
+      ) do
+    all_food =
+      Food.get_nodes(field)
+      |> Enum.filter(fn food ->
+        Snake.count_deadly_adjacent_snake_heads(field, food, snakes, snake["id"]) == 0
+      end)
 
     ok_food =
       Enum.filter(all_food, fn food ->
-        # TODO have this think criticaly re: size of snake
-        !Nodes.is_segment_adjacent_node?(field, food, :head, [snake["id"]]) and
-          Nodes.calculate_node_safety(field, food, snake_segment_types) < 2
+        Nodes.calculate_node_safety(field, food, snake_segment_types) < 2
       end)
 
     safe_food =
       Enum.filter(
         all_food,
         fn food ->
-          !Nodes.is_segment_adjacent_node?(field, food, :head, [snake["id"]]) and
-            Nodes.calculate_node_safety(field, food, snake_segment_types) == 0
+          Nodes.calculate_node_safety(field, food, snake_segment_types) == 0
         end
       )
 

@@ -64,16 +64,29 @@ defmodule BattleSnake2019.Pathsolver.Waypoints do
   def keep_waypoint?(waypoint, closed_list, _goal),
     do: !waypoint_has_been_visited?(waypoint, closed_list)
 
-  def keep_waypoint?(%{segment_type: segment_type}, game) do
-    waypoint_is_not_body = segment_type != :body and segment_type != :head
+  def keep_waypoint?(%{segment_type: segment_type} = waypoint, %{
+        "field" => field,
+        "board" => %{"snakes" => snakes},
+        "you" => my_snake
+      }) do
+    no_deadly_snake_heads =
+      Snake.count_deadly_adjacent_snake_heads(field, waypoint, snakes, my_snake["id"])
+
+    segment_type != :body and segment_type != :head and no_deadly_snake_heads == 0
   end
 
-  def keep_waypoint?(%{segment_type: segment_type}),
-    do: segment_type != :body and segment_type != :head
+  def keep_waypoint?(nil, _game), do: false
 
-  def keep_waypoint?(nil), do: false
+  def keep_waypoint?(waypoint, %{
+        "field" => field,
+        "board" => %{"snakes" => snakes},
+        "you" => my_snake
+      }) do
+    no_deadly_snake_heads =
+      Snake.count_deadly_adjacent_snake_heads(field, waypoint, snakes, my_snake["id"])
 
-  def keep_waypoint?(_), do: true
+    no_deadly_snake_heads == 0
+  end
 
   defp directions("y", velocity) do
     if velocity == -1, do: "down", else: "up"

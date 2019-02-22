@@ -4,7 +4,7 @@ defmodule BattleSnake2019.Facts do
   alias BattleSnake2019.Field.Nodes
   alias BattleSnake2019.Snake.Body
 
-  def get_facts(%{"field" => field, "you" => snake, "board" => %{"snakes" => snakes}}) do
+  def get_facts(%{"field" => field, "you" => snake, "board" => %{"snakes" => snakes}} = game) do
     snake_segment_types = Snake.get_segment_types()
     body_size = Body.get_body_size(snake)
     enemy_snakes = Body.find_enemy_snakes(snake, snakes)
@@ -43,7 +43,7 @@ defmodule BattleSnake2019.Facts do
     head = Snake.get_segment_location(field, snake["id"], :head)
     maybe_tail = Snake.get_segment_location(field, snake["id"], :tail)
 
-    tail = if is_nil(maybe_tail), do: Body.get_false_tail(snake, field), else: maybe_tail
+    tail = if is_nil(maybe_tail), do: Body.get_false_tail(snake, game), else: maybe_tail
 
     no_tail = if is_nil(tail), do: 1, else: 0
 

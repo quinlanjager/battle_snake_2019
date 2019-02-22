@@ -28,7 +28,9 @@ defmodule BattleSnake2019.Snake.BodyTest do
       Field.create_field(game)
       |> Field.update_field(game)
 
-    tail = Body.get_false_tail(snake, field)
+    game_with_field = Map.put(game, "field", field)
+
+    tail = Body.get_false_tail(snake, game_with_field)
     assert tail == %{"x" => 1, "y" => 3, entity: "snake", segment_type: :tail, id: "1_3"}
   end
 end

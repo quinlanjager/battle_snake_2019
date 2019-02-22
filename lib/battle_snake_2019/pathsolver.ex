@@ -6,11 +6,12 @@ defmodule BattleSnake2019.Pathsolver do
 
   @goal_timeout 650
 
-  def solve_shortest_path_to_goal(field, snake, goals) when is_list(goals) do
+  def solve_shortest_path_to_goal(%{"field" => field, "you" => snake} = game, goals)
+      when is_list(goals) do
     snake_id = snake["id"]
     start = Snake.get_segment_location(field, snake_id, :head) |> Map.put(:cost, 0)
 
-    paths_to_goal = find_ideal_path(field, start, goals)
+    paths_to_goal = find_ideal_path(game, start, goals)
 
     case paths_to_goal do
       {:ok, path, _goal} ->
@@ -23,12 +24,12 @@ defmodule BattleSnake2019.Pathsolver do
     end
   end
 
-  def solve_shortest_path_to_goal(field, snake, goal) do
+  def solve_shortest_path_to_goal(%{"field" => field, "you" => snake} = game, goal) do
     snake_id = snake["id"]
     start = Snake.get_segment_location(field, snake_id, :head) |> Map.put(:cost, 0)
 
     paths_to_goal =
-      Task.yield(Task.async(fn -> find_ideal_path(field, start, goal) end), @goal_timeout)
+      Task.yield(Task.async(fn -> find_ideal_path(game, start, goal) end), @goal_timeout)
 
     case paths_to_goal do
       {:ok, {:ok, path, _goal}} ->
@@ -41,30 +42,13 @@ defmodule BattleSnake2019.Pathsolver do
     end
   end
 
-  def solve_longest_path_to_goal(field, snake, goals) do
-    snake_id = snake["id"]
-    start = Snake.get_segment_location(field, snake_id, :head) |> Map.put(:cost, 0)
-    paths_to_goal = find_ideal_path(field, start, goals)
-
-    case paths_to_goal do
-      {:ok, path, _goal} ->
-        extended_path = Path.extend_path(path, field)
-        # index 0 is the start
-        Waypoints.get_waypoint_direction(Enum.at(extended_path, 1), start)
-
-      nil ->
-        nil
-        # do something else :(
-    end
-  end
-
   # Choose the least dangerous adjacent node
-  def emergency_move(field, snake) do
+  def emergency_move(%{"field" => field} = game, snake) do
     snake_head = Enum.at(snake["body"], 0)
 
     adjacent_nodes =
       Nodes.get_adjacent_nodes(field, snake_head)
-      |> Enum.filter(fn node -> Waypoints.keep_waypoint?(node) end)
+      |> Enum.filter(fn node -> Waypoints.keep_waypoint?(node, game) end)
       |> Enum.map(fn node ->
         {node, Nodes.calculate_node_safety(field, node, Snake.get_segment_types())}
       end)
@@ -82,11 +66,11 @@ defmodule BattleSnake2019.Pathsolver do
     end
   end
 
-  def find_ideal_path(field, start, goals) when is_list(goals) do
+  def find_ideal_path(game, start, goals) when is_list(goals) do
     {_result_code, path_to_goal} =
       Task.async_stream(
         goals,
-        fn goal -> find_ideal_path(field, start, goal) end,
+        fn goal -> find_ideal_path(game, start, goal) end,
         ordered: false,
         timeout: @goal_timeout,
         on_timeout: :kill_task
@@ -105,15 +89,22 @@ defmodule BattleSnake2019.Pathsolver do
     path_to_goal
   end
 
-  def find_ideal_path(field, start, goal) do
+  def find_ideal_path(game, start, goal) do
     unvisited_list = [Map.put(start, :cost, 0)]
     visited_list = []
     path = %{}
 
-    solve_path_to_goal(field, start, goal, unvisited_list, visited_list, path)
+    solve_path_to_goal(game, start, goal, unvisited_list, visited_list, path)
   end
 
-  def solve_path_to_goal(field, start, goal, [node | rest], visited_list, path) do
+  def solve_path_to_goal(
+        %{"field" => field, "board" => %{"snakes" => snakes}} = game,
+        start,
+        goal,
+        [node | rest],
+        visited_list,
+        path
+      ) do
     has_same_coordinates = Nodes.is_the_node?(goal, node)
     is_goal = has_same_coordinates
 
@@ -127,7 +118,7 @@ defmodule BattleSnake2019.Pathsolver do
           Waypoints.keep_waypoint?(waypoint, visited_list, goal)
         end)
         |> Enum.map(fn waypoint ->
-          Map.put(waypoint, :cost, Waypoints.get_cost(waypoint, node, goal, start, field))
+          Map.put(waypoint, :cost, Waypoints.get_cost(waypoint, node, goal, start, game))
         end)
 
       updated_path =
@@ -143,7 +134,7 @@ defmodule BattleSnake2019.Pathsolver do
         |> Enum.uniq_by(fn %{:id => id} -> id end)
 
       solve_path_to_goal(
-        field,
+        game,
         start,
         goal,
         updated_unvisited_list,

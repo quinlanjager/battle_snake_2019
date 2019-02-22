@@ -27,13 +27,15 @@ defmodule BattleSnake2019.Snake.Body do
     length(body)
   end
 
-  def get_false_tail(%{"id" => id, "body" => body}, field) do
+  def get_body_size(_), do: 0
+
+  def get_false_tail(%{"id" => id, "body" => body}, %{"field" => field} = game) do
     last_segment = List.last(body)
     omitted_types = [:body, :head, :tail]
 
     adjacent_nodes =
       Nodes.get_adjacent_nodes(field, last_segment)
-      |> Enum.filter(&Waypoints.keep_waypoint?/1)
+      |> Enum.filter(fn waypoint -> Waypoints.keep_waypoint?(waypoint, game) end)
       |> Enum.map(fn node ->
         {node, Nodes.calculate_node_safety(field, node, omitted_types)}
       end)

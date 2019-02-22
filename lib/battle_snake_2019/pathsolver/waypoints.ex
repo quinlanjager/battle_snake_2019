@@ -1,5 +1,6 @@
 defmodule BattleSnake2019.Pathsolver.Waypoints do
   alias BattleSnake2019.Field.Nodes
+  alias BattleSnake2019.Field.Snake
 
   def get_waypoint_direction(nil, start) do
     nil
@@ -22,20 +23,22 @@ defmodule BattleSnake2019.Pathsolver.Waypoints do
     heuristic + current_node.cost
   end
 
-  def get_cost(waypoint, current_node, goal, start, field) do
+  def get_cost(waypoint, current_node, goal, start, %{
+        "field" => field,
+        "board" => %{"snakes" => snakes},
+        "you" => my_snake
+      }) do
     heuristic = Nodes.calculate_distance(waypoint, goal)
 
-    omitted_entities = [Map.get(start, :entity)]
-
-    is_adjacent_to_head =
-      Nodes.is_segment_adjacent_node?(field, waypoint, :head, omitted_entities)
+    no_deadly_snake_heads =
+      Snake.count_deadly_adjacent_snake_heads(field, waypoint, snakes, my_snake["id"])
 
     node_safety = Nodes.calculate_node_safety(field, waypoint, [:tail, :body])
     raw_heuristic = heuristic + current_node.cost + node_safety
 
     # if we're adjacent to an enemy head
     # Only go there at a last resort
-    if is_adjacent_to_head do
+    if no_deadly_snake_heads > 0 do
       raw_heuristic * 999_999
     else
       raw_heuristic
@@ -60,6 +63,10 @@ defmodule BattleSnake2019.Pathsolver.Waypoints do
 
   def keep_waypoint?(waypoint, closed_list, _goal),
     do: !waypoint_has_been_visited?(waypoint, closed_list)
+
+  def keep_waypoint?(%{segment_type: segment_type}, game) do
+    waypoint_is_not_body = segment_type != :body and segment_type != :head
+  end
 
   def keep_waypoint?(%{segment_type: segment_type}),
     do: segment_type != :body and segment_type != :head

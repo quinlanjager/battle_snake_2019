@@ -27,6 +27,8 @@ defmodule BattleSnake2019.Snake.Body do
     length(body)
   end
 
+  def get_body_size(_), do: 0
+
   def get_false_tail(%{"id" => id, "body" => body}, field) do
     last_segment = List.last(body)
     omitted_types = [:body, :head, :tail]

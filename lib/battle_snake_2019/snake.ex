@@ -19,19 +19,14 @@ defmodule BattleSnake2019.Snake do
       |> Enum.sort_by(fn {_key, weight} -> weight end, &>=/2)
       |> Enum.at(0)
 
-    {goals, path_type} = Map.get(game_facts, goal_name)
+    {goals, _path_type} = Map.get(game_facts, goal_name)
     IO.puts(goal_name)
 
-    move =
-      if path_type == :short do
-        Pathsolver.solve_shortest_path_to_goal(current_game["field"], current_game["you"], goals)
-      else
-        Pathsolver.solve_longest_path_to_goal(current_game["field"], current_game["you"], goals)
-      end
+    move = Pathsolver.solve_shortest_path_to_goal(current_game, goals)
 
     case move do
       nil ->
-        emergency_move = Pathsolver.emergency_move(field, snake)
+        emergency_move = Pathsolver.emergency_move(current_game, snake)
         IO.puts("making an emergency move: #{emergency_move}")
         %{"move" => emergency_move}
 

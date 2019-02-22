@@ -47,22 +47,23 @@ defmodule BattleSnake2019.Pathsolver do
     snake_head = List.first(body)
     snake_tail = List.last(body)
 
-    adjacent_nodes =
+    best_option =
       Nodes.get_adjacent_nodes(field, snake_head)
       |> Enum.filter(fn node -> Waypoints.keep_waypoint?(node, game) end)
       |> Enum.map(fn node ->
-        {node, Nodes.calculate_node_safety(field, node, Snake.get_segment_types())}
-      end)
-      |> Enum.filter(fn {_node, safety} -> safety < 4 end)
+        adjacent_nodes = Nodes.get_adjacent_nodes(field, node)
 
-    best_option =
-      Enum.sort_by(adjacent_nodes, fn {node, _safety} ->
-        Nodes.calculate_distance(snake_tail, node)
+        number_of_valid_paths_from_node =
+          Enum.count(adjacent_nodes, fn node -> Waypoints.keep_waypoint?(node, game) end)
+
+        node_danger = Nodes.calculate_node_safety(field, node, Snake.get_segment_types())
+        {node, node_danger - number_of_valid_paths_from_node}
       end)
+      |> Enum.sort_by(fn {_node, danger} -> danger end)
       |> List.first()
 
     case best_option do
-      {choice_node, _safety} ->
+      {choice_node, _danger} ->
         Waypoints.get_waypoint_direction(choice_node, snake_head)
 
       _ ->

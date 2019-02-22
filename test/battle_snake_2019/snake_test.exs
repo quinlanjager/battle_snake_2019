@@ -117,6 +117,44 @@ defmodule BattleSnake2019.SnakeTest do
     end
   end
 
+  test "prefers tiles closer to tail in an emergency" do
+    enemy_snake_bodies = [
+      [
+        %{"x" => 0, "y" => 3},
+        %{"x" => 0, "y" => 2},
+        %{"x" => 0, "y" => 1},
+        %{"x" => 0, "y" => 0},
+        %{"x" => 1, "y" => 0},
+        %{"x" => 2, "y" => 0},
+        %{"x" => 2, "y" => 1}
+      ],
+      [
+        %{"x" => 3, "y" => 2},
+        %{"x" => 3, "y" => 1},
+        %{"x" => 3, "y" => 0}
+      ]
+    ]
+
+    my_snake = [
+      %{"x" => 2, "y" => 3},
+      %{"x" => 3, "y" => 3},
+      %{"x" => 4, "y" => 3},
+      %{"x" => 5, "y" => 3},
+      %{"x" => 5, "y" => 2}
+    ]
+
+    food = [
+      %{"x" => 4, "y" => 2},
+      %{"x" => 4, "y" => 1}
+    ]
+
+    game = mock_game(enemy_snake_bodies, my_snake, food, {4, 6})
+    field = Field.create_field(game) |> Field.update_field(game)
+    game_with_field = Map.put(game, "field", field)
+    res = Snake.move(game_with_field)
+    assert Map.get(res, "move") == "up"
+  end
+
   def mock_game(
         enemy_snake_bodies,
         my_snake_body \\ [

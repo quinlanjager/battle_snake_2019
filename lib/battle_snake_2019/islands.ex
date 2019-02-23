@@ -2,11 +2,8 @@ defmodule BattleSnake2019.Islands do
   alias BattleSnake2019.Field.Nodes
   alias BattleSnake2019.Pathsolver.Waypoints
 
-  def discover(field, primary_snake_id \\ nil) do
-    islands = []
-
-    gather_islands(field, islands, primary_snake_id)
-  end
+  def discover(field, primary_snake_id \\ nil),
+    do: gather_islands(field, [], primary_snake_id)
 
   def gather_islands(
         [node | rest_of_field],
@@ -38,7 +35,7 @@ defmodule BattleSnake2019.Islands do
       ),
       do: islands
 
-  def build_island(field, [], new_island, _primary_snake_id), do: new_island
+  def build_island(_field, [], new_island, _primary_snake_id), do: new_island
 
   def build_island(field, seed_nodes, new_island, primary_snake_id) do
     update_island = new_island ++ seed_nodes

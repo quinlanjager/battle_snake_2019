@@ -104,7 +104,11 @@ defmodule BattleSnake2019.Facts do
 
     {enemy_head, enemy_head_distance, enemy_body_size, is_adjacent_enemy} =
       Enum.filter(enemy_snakes, fn {enemy_head, _, _, _} ->
-        Islands.is_in_same_island?(islands, enemy_head, snake_head)
+        node_is_safe =
+          Nodes.calculate_node_safety(field, enemy_head, [:body]) == 0 and
+            Snake.count_deadly_adjacent_snake_heads(field, enemy_head, snakes, snake["id"]) == 0
+
+        node_is_safe and Islands.is_in_same_island?(islands, enemy_head, snake_head)
       end)
       |> Enum.at(0, {%{entity: :snake}, 100_000, 0, false})
 

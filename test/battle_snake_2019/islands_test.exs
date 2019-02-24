@@ -92,7 +92,7 @@ defmodule BattleSnake2019.IslandsTest do
       Field.create_field(game)
       |> Field.update_field(game)
 
-    island_result = Islands.discover(field, "1")
+    island_result = Islands.discover(Map.put(game, "field", field))
 
     assert island_result == islands
   end

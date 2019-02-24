@@ -88,6 +88,13 @@ defmodule BattleSnake2019.Pathsolver.Waypoints do
     no_deadly_snake_heads == 0
   end
 
+  def keep_waypoint?(%{segment_type: segment_type}),
+    do: segment_type != :body and segment_type != :head
+
+  def keep_waypoint?(nil), do: false
+
+  def keep_waypoint?(waypoint), do: true
+
   defp directions("y", velocity) do
     if velocity == -1, do: "down", else: "up"
   end

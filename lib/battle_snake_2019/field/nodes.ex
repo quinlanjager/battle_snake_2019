@@ -3,6 +3,18 @@ defmodule BattleSnake2019.Field.Nodes do
 
   @directions [["x", [1, -1]], ["y", [1, -1]]]
 
+  def is_node_segment?(%{segment_type: segment_type}, maybe_segment) do
+    segment_type == maybe_segment
+  end
+
+  def is_node_segment?(_node, _maybe_segment), do: false
+
+  def is_node_entity?(%{entity: entity}, maybe_entity) do
+    entity == maybe_entity
+  end
+
+  def is_node_entity?(_node, _maybe_entity), do: false
+
   def is_the_node?(node, other) do
     Map.get(node, "x") == Map.get(other, "x") and Map.get(node, "y") == Map.get(other, "y")
   end

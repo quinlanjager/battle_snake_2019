@@ -47,4 +47,8 @@ defmodule BattleSnake2019.Snake do
   def get_snake_name do
     @name
   end
+
+  def get_snake(snakes, id) do
+    Enum.find(snakes, fn %{"id" => snake_id} -> snake_id == id end)
+  end
 end

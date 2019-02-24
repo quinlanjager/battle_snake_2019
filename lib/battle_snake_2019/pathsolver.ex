@@ -49,12 +49,12 @@ defmodule BattleSnake2019.Pathsolver do
 
     best_option =
       Nodes.get_adjacent_nodes(field, snake_head)
-      |> Enum.filter(fn node -> Waypoints.keep_waypoint?(node, game) end)
+      |> Enum.filter(fn node -> Waypoints.keep_emergency_waypoint?(node, game) end)
       |> Enum.map(fn node ->
         adjacent_nodes = Nodes.get_adjacent_nodes(field, node)
 
         number_of_valid_paths_from_node =
-          Enum.count(adjacent_nodes, fn node -> Waypoints.keep_waypoint?(node, game) end)
+          Enum.count(adjacent_nodes, fn node -> Waypoints.keep_emergency_waypoint?(node, game) end)
 
         node_danger = Nodes.calculate_node_safety(field, node, Snake.get_segment_types())
         {node, node_danger - number_of_valid_paths_from_node}

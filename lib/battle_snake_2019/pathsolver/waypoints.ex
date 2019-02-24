@@ -1,6 +1,8 @@
 defmodule BattleSnake2019.Pathsolver.Waypoints do
   alias BattleSnake2019.Field.Nodes
-  alias BattleSnake2019.Field.Snake
+  alias BattleSnake2019.Field.Snake, as: FieldSnake
+  alias BattleSnake2019.Snake
+  alias BattleSnake2019.Snake.Body
 
   def get_waypoint_direction(nil, start) do
     nil
@@ -31,7 +33,7 @@ defmodule BattleSnake2019.Pathsolver.Waypoints do
     heuristic = Nodes.calculate_distance(waypoint, goal)
 
     no_deadly_snake_heads =
-      Snake.count_deadly_adjacent_snake_heads(field, waypoint, snakes, my_snake["id"])
+      FieldSnake.count_deadly_adjacent_snake_heads(field, waypoint, snakes, my_snake["id"])
 
     node_safety = Nodes.calculate_node_safety(field, waypoint, [:tail, :body])
     raw_heuristic = heuristic + current_node.cost + node_safety
@@ -45,55 +47,36 @@ defmodule BattleSnake2019.Pathsolver.Waypoints do
     end
   end
 
-  def keep_waypoint?(
-        %{segment_type: segment_type} = waypoint,
-        closed_list,
-        goal
-      ) do
-    waypoint_is_the_goal = Nodes.is_the_node?(goal, waypoint)
+  def keep_waypoint?(%{segment_type: :body} = waypoint, _closed_list, goal),
+    do: Nodes.is_the_node?(goal, waypoint) or false
 
-    waypoint_is_not_body = segment_type != :body and segment_type != :head
-
-    waypoint_has_not_been_visited = !waypoint_has_been_visited?(waypoint, closed_list)
-
-    (waypoint_is_not_body and waypoint_has_not_been_visited) or waypoint_is_the_goal
-  end
+  def keep_waypoint?(%{segment_type: :head} = waypoint, _closed_list, goal),
+    do: Nodes.is_the_node?(goal, waypoint) or false
 
   def keep_waypoint?(nil, _closed_list, _goal), do: false
 
   def keep_waypoint?(waypoint, closed_list, _goal),
     do: !waypoint_has_been_visited?(waypoint, closed_list)
 
-  def keep_waypoint?(%{segment_type: segment_type} = waypoint, %{
-        "field" => field,
+  def keep_emergency_waypoint?(%{segment_type: :body}, _game), do: false
+
+  def keep_emergency_waypoint?(%{segment_type: :head, entity: id} = node, %{
         "board" => %{"snakes" => snakes},
         "you" => my_snake
       }) do
-    no_deadly_snake_heads =
-      Snake.count_deadly_adjacent_snake_heads(field, waypoint, snakes, my_snake["id"])
-
-    segment_type != :body and segment_type != :head and no_deadly_snake_heads == 0
+    enemy_snake = Snake.get_snake(snakes, id)
+    Body.is_larger_than_snake?(my_snake, enemy_snake)
   end
 
-  def keep_waypoint?(nil, _game), do: false
+  def keep_emergency_waypoint?(nil, _game), do: false
 
-  def keep_waypoint?(waypoint, %{
+  def keep_emergency_waypoint?(waypoint, %{
         "field" => field,
         "board" => %{"snakes" => snakes},
         "you" => my_snake
-      }) do
-    no_deadly_snake_heads =
-      Snake.count_deadly_adjacent_snake_heads(field, waypoint, snakes, my_snake["id"])
-
-    no_deadly_snake_heads == 0
-  end
-
-  def keep_waypoint?(%{segment_type: segment_type}),
-    do: segment_type != :body and segment_type != :head
-
-  def keep_waypoint?(nil), do: false
-
-  def keep_waypoint?(waypoint), do: true
+      }),
+      do:
+        FieldSnake.count_larger_adjacent_snake_heads(field, waypoint, snakes, my_snake["id"]) == 0
 
   defp directions("y", velocity) do
     if velocity == -1, do: "down", else: "up"

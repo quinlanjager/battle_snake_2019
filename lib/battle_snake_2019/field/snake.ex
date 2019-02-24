@@ -62,6 +62,20 @@ defmodule BattleSnake2019.Field.Snake do
   end
 
   def count_deadly_adjacent_snake_heads(field, node, snakes, omitted_snake_id \\ nil) do
+    compare_adjacent_snake_heads(field, node, snakes, omitted_snake_id)
+  end
+
+  def count_larger_adjacent_snake_heads(field, node, snakes, omitted_snake_id \\ nil) do
+    compare_adjacent_snake_heads(field, node, snakes, omitted_snake_id, &>/2)
+  end
+
+  def compare_adjacent_snake_heads(
+        field,
+        node,
+        snakes,
+        omitted_snake_id \\ nil,
+        operation \\ &>=/2
+      ) do
     adjacent_snake_heads = get_adjacent_snake_heads(field, node, snakes, omitted_snake_id)
 
     Enum.count(adjacent_snake_heads, fn %{entity: snake_id} ->
@@ -73,7 +87,7 @@ defmodule BattleSnake2019.Field.Snake do
         Enum.find(snakes, fn %{"id" => id} -> id == omitted_snake_id end)
         |> Body.get_body_size()
 
-      enemy_snake_size >= my_snake_size
+      operation.(enemy_snake_size, my_snake_size)
     end)
   end
 end

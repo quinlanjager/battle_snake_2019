@@ -1,6 +1,7 @@
 defmodule BattleSnake2019.Islands do
   alias BattleSnake2019.Field.Nodes
   alias BattleSnake2019.Snake.Body
+  alias BattleSnake2019.Snake
 
   def discover(game),
     do: gather_islands(game, [])
@@ -84,7 +85,7 @@ defmodule BattleSnake2019.Islands do
     if Nodes.is_node_entity?(node, primary_snake_id) do
       is_not_in_island
     else
-      enemy_snake = Body.get_snake(snakes, entity)
+      enemy_snake = Snake.get_snake(snakes, entity)
       is_not_in_island and Body.is_larger_than_snake?(snake, enemy_snake)
     end
   end

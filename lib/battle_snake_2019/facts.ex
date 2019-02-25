@@ -21,7 +21,7 @@ defmodule BattleSnake2019.Facts do
     {no_ok_food, no_safe_food, nearest_safe_food, nearest_food, ok_food_result, safe_food_result} =
       find_food_facts(game, islands)
 
-    {tail, no_tail, tail_safety} = find_tail_facts(game, islands)
+    {tail, no_tail, tail_safety} = find_tail_facts(game)
 
     ok_food = if no_ok_food == 1 and no_tail == 0, do: [tail], else: ok_food_result
     safe_food = if no_safe_food == 1 and no_tail == 0, do: [tail], else: safe_food_result
@@ -143,7 +143,6 @@ defmodule BattleSnake2019.Facts do
 
   def find_tail_facts(
         %{"field" => field, "you" => snake, "board" => %{"snakes" => snakes}} = game,
-        islands
       ) do
     snake_segment_types = Snake.get_segment_types()
     snake_head = Snake.get_segment_location(field, snake["id"], :head)
@@ -152,7 +151,7 @@ defmodule BattleSnake2019.Facts do
     tail = if is_nil(maybe_tail), do: Body.get_false_tail(snake, game), else: maybe_tail
 
     no_tail =
-      if is_nil(tail) or !Islands.is_in_same_island?(islands, tail, snake_head), do: 1, else: 0
+      if is_nil(tail), do: 1, else: 0
 
     tail_safety =
       if no_tail == 1,

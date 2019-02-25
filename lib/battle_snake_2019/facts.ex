@@ -142,7 +142,7 @@ defmodule BattleSnake2019.Facts do
   end
 
   def find_tail_facts(
-        %{"field" => field, "you" => snake, "board" => %{"snakes" => snakes}} = game,
+        %{"field" => field, "you" => snake, "board" => %{"snakes" => snakes}} = game
       ) do
     snake_segment_types = Snake.get_segment_types()
     snake_head = Snake.get_segment_location(field, snake["id"], :head)
@@ -150,8 +150,7 @@ defmodule BattleSnake2019.Facts do
 
     tail = if is_nil(maybe_tail), do: Body.get_false_tail(snake, game), else: maybe_tail
 
-    no_tail =
-      if is_nil(tail), do: 1, else: 0
+    no_tail = if is_nil(tail), do: 1, else: 0
 
     tail_safety =
       if no_tail == 1,

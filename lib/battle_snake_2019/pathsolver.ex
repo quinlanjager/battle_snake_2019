@@ -6,6 +6,10 @@ defmodule BattleSnake2019.Pathsolver do
 
   @goal_timeout 650
 
+  def solve_shortest_path_to_goal(_game, nil), do: nil
+
+  def solve_shortest_path_to_goal(_game, []), do: nil
+
   def solve_shortest_path_to_goal(%{"field" => field, "you" => snake} = game, goals)
       when is_list(goals) do
     snake_id = snake["id"]

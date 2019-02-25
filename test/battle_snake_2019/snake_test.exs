@@ -155,6 +155,25 @@ defmodule BattleSnake2019.SnakeTest do
     assert Map.get(res, "move") == "up"
   end
 
+  test "Makes an emergency move when a nil goal is received" do
+    #  012 
+    # 0ob
+    # 1bb
+    # 2
+    snake = [
+      %{"x" => 0, "y" => 0},
+      %{"x" => 1, "y" => 0},
+      %{"x" => 0, "y" => 1},
+      %{"x" => 1, "y" => 1}
+    ]
+
+    game = mock_game([], snake, [], {3, 3})
+    field = Field.create_field(game) |> Field.update_field(game)
+    game_with_field = Map.put(game, "field", field)
+    res = Snake.move(game_with_field)
+    assert Map.get(res, "move") == "right"
+  end
+
   def mock_game(
         enemy_snake_bodies,
         my_snake_body \\ [

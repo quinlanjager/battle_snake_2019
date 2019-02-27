@@ -12,8 +12,7 @@ defmodule BattleSnake2019.Rules.GoalPolicy do
 
     weight_by(:body_size, :subtract)
     weight_by(:health_lost, :add)
-    weight_by(:safe_food_length, :add, 1.25)
-    weight_by(:nearest_safe_food_dist, :subtract)
+    weight_by(:safe_food_length, :add, 5.25)
   end
 
   policy :all_food do
@@ -21,8 +20,7 @@ defmodule BattleSnake2019.Rules.GoalPolicy do
 
     weight_by(:body_size, :subtract)
     weight_by(:health_lost, :add)
-    weight_by(:all_food_length, :add)
-    weight_by(:nearest_food_dist, :subtract)
+    weight_by(:all_food_length, :add, 5)
   end
 
   policy :tail do

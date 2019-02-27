@@ -8,8 +8,8 @@ defmodule BattleSnake2019.Snake do
 
   # your Snake settings
   @color "#d6e100"
-  @head_type "bendr"
-  @tail_type "bolt"
+  @head_type "safe"
+  @tail_type "round-bum"
   @valid_moves ["right", "left", "up", "down"]
   @name "Jachtslang"
 

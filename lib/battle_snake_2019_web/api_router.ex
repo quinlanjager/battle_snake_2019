@@ -15,7 +15,12 @@ defmodule BattleSnake2019.Web.APIRouter do
   plug(:dispatch)
 
   post "/start" do
-    response = %{"color" => Snake.get_color()}
+    response = %{
+      "color" => Snake.get_color(),
+      "headType" => Snake.get_head_type(),
+      "tailType" => Snake.get_tail_type()
+    }
+
     game = conn.body_params
 
     send_resp(conn, 200, encode!(response))

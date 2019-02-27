@@ -8,8 +8,10 @@ defmodule BattleSnake2019.Snake do
 
   # your Snake settings
   @color "#d6e100"
+  @head_type "bendr"
+  @tail_type "bolt"
   @valid_moves ["right", "left", "up", "down"]
-  @name "Sweetpea"
+  @name "Jachtslang"
 
   def move(%{"game" => %{"id" => game_id}, "you" => snake, "field" => field} = current_game) do
     game_facts = Facts.get_facts(current_game)
@@ -47,6 +49,9 @@ defmodule BattleSnake2019.Snake do
   def get_snake_name do
     @name
   end
+
+  def get_head_type, do: @head_type
+  def get_tail_type, do: @tail_type
 
   def get_snake(snakes, id) do
     Enum.find(snakes, fn %{"id" => snake_id} -> snake_id == id end)

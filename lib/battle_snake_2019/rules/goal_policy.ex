@@ -3,7 +3,7 @@ defmodule BattleSnake2019.Rules.GoalPolicy do
 
   policy :enemy_head do
     weight_by(:enemy_head_distance, :subtract, 5)
-    weight_by(:enemy_body_difference, :add, 10)
+    weight_by(:enemy_body_difference, :add, 12)
     weight_by(:enemy_head_is_adjacent, :subtract, 999_999)
   end
 
@@ -27,10 +27,7 @@ defmodule BattleSnake2019.Rules.GoalPolicy do
 
   policy :tail do
     weight_by(:no_tail, :subtract, 999_999)
-    weight_by(:no_ok_food, :add, 20)
-    weight_by(:no_of_enemy_nearby, :add)
-    weight_by(:nearest_food_dist, :add, 0.1)
-    weight_by(:nearest_safe_food_dist, :add, 0.1)
-    weight_by(:snake_safety, :add, 5)
+    weight_by(:no_of_enemy_nearby, :add, 10)
+    weight(:add)
   end
 end

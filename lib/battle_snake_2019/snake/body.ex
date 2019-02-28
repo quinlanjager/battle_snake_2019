@@ -24,7 +24,7 @@ defmodule BattleSnake2019.Snake.Body do
 
   def get_body_size(_), do: 0
 
-  def get_false_tail(%{"id" => id, "body" => body}, %{"field" => field} = game) do
+  def get_false_tail(%{"id" => id, "body" => body}, %{"field" => field}) do
     last_segment = List.last(body)
     omitted_types = [:body, :head]
 

@@ -42,6 +42,15 @@ defmodule BattleSnake2019.Rules.Policy do
     end
   end
 
+  defmacro weight_if(key, change \\ :add, multiplier \\ 1) do
+    quote do
+      var!(weight, __MODULE__) = [
+        {:boolean, unquote(key), unquote(change), unquote(multiplier)}
+        | var!(weight, __MODULE__)
+      ]
+    end
+  end
+
   defmacro __before_compile__(_env) do
     quote do
       def get_policies do

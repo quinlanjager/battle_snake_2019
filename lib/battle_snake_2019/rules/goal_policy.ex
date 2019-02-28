@@ -15,12 +15,19 @@ defmodule BattleSnake2019.Rules.GoalPolicy do
     weight_by(:safe_food_length, :add, 5.25)
   end
 
-  policy :all_food do
+  policy :ok_food do
     weight_by(:no_ok_food, :subtract, 999_999)
 
     weight_by(:largest_body_difference, :add, 5)
     weight_by(:health_lost, :add)
-    weight_by(:all_food_length, :add, 5)
+    weight_by(:ok_food_length, :add, 5)
+  end
+
+  policy :all_food do
+    weight_by(:no_all_food, :subtract, 999_999)
+    weight_by(:skip_all_food, :subtract, 999_999_999)
+
+    weight_by(:health_lost, :add)
   end
 
   policy :tail do

@@ -1,6 +1,5 @@
 defmodule BattleSnake2019.Snake.Body do
   alias BattleSnake2019.Field.Snake, as: FieldSnake
-  alias BattleSnake2019.Snake
   alias BattleSnake2019.Field.Nodes
 
   def find_enemy_snakes(field, snake, snakes) do

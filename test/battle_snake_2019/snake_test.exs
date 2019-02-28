@@ -221,7 +221,7 @@ defmodule BattleSnake2019.SnakeTest do
     snakes =
       Enum.map(enemy_snake_bodies, fn body ->
         %{
-          "id" => "snake-#{:random.uniform(1000)}",
+          "id" => "snake-#{:rand.uniform(1000)}",
           "name" => "enemy",
           "health" => 100,
           "body" => body

@@ -100,7 +100,14 @@ defmodule BattleSnake2019.Facts do
     snake_head = Snake.get_segment_location(field, snake["id"], :head)
     body_size = Body.get_body_size(snake)
 
-    enemy_snakes = Body.find_enemy_snakes(field, snake, snakes)
+    enemy_snakes =
+      Body.find_enemy_snakes(field, snake, snakes)
+      |> Enum.sort_by(
+        fn {_head, head_distance, _body_size, _head_is_adjacent} ->
+          head_distance
+        end,
+        &<=/2
+      )
 
     no_of_enemy_snakes = length(enemy_snakes)
 

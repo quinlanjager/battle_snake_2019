@@ -16,12 +16,6 @@ defmodule BattleSnake2019.Snake.Body do
       head_is_adjacent = Nodes.is_adjacent_node?(head, snake_head)
       {head, head_distance, body_size, head_is_adjacent}
     end)
-    |> Enum.sort_by(
-      fn {_head, head_distance, _body_size, _head_is_adjacent} ->
-        head_distance
-      end,
-      &<=/2
-    )
   end
 
   def get_body_size(%{"body" => body}) do

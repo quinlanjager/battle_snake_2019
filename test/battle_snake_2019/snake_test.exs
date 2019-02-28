@@ -178,7 +178,7 @@ defmodule BattleSnake2019.SnakeTest do
     #  0123 
     # 0b0 f
     # 1bb
-    # 2
+    # 2 f
     # 3
     snake = [
       %{"x" => 1, "y" => 0},
@@ -188,6 +188,7 @@ defmodule BattleSnake2019.SnakeTest do
     ]
 
     food = [
+      %{"x" => 2, "y" => 2},
       %{"x" => 3, "y" => 0}
     ]
 

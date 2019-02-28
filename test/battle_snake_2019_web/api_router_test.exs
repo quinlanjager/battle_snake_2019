@@ -16,7 +16,11 @@ defmodule BattleSnake2019.Web.APIRouterTest do
 
       {:ok, decoded_body} = decode(resp.resp_body)
 
-      assert decoded_body == %{"color" => Snake.get_color()}
+      assert decoded_body == %{
+               "color" => Snake.get_color(),
+               "headType" => Snake.get_head_type(),
+               "tailType" => Snake.get_tail_type()
+             }
     end
   end
 

@@ -31,6 +31,11 @@ defmodule BattleSnake2019.Field.Nodes do
     Map.get(node, :segment_type) == Map.get(other, :segment_type)
   end
 
+  def is_node_adjacent_to_wall?(field, node) do
+    adjacent_nodes = get_adjacent_nodes(field, node)
+    Enum.any?(adjacent_nodes, fn node -> is_nil(node) end)
+  end
+
   def calculate_node_safety(field, node, off_limit_segments \\ []) do
     adjacent_nodes = get_adjacent_nodes(field, node)
 

@@ -5,7 +5,7 @@ defmodule BattleSnake2019.Facts do
   alias BattleSnake2019.Snake.Body
   alias BattleSnake2019.Islands
 
-  def get_facts(%{"field" => field, "you" => snake, "board" => %{"snakes" => snakes}} = game) do
+  def get_facts(%{"field" => field, "you" => snake} = game) do
     islands = Islands.discover(game)
     snake_segment_types = Snake.get_segment_types()
     body_size = Body.get_body_size(snake)
@@ -63,7 +63,8 @@ defmodule BattleSnake2019.Facts do
       Food.get_nodes(field)
       |> Enum.filter(fn food ->
         Snake.count_deadly_adjacent_snake_heads(field, food, snakes, snake["id"]) == 0 and
-          Islands.is_in_same_island?(islands, food, snake_head)
+          Islands.is_in_same_island?(islands, food, snake_head) and
+          !Nodes.is_node_adjacent_to_wall?(field, food)
       end)
 
     ok_food =

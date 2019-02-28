@@ -174,6 +174,30 @@ defmodule BattleSnake2019.SnakeTest do
     assert Map.get(res, "move") == "right"
   end
 
+  test "avoids food around the walls" do
+    #  0123 
+    # 0b0 f
+    # 1bb
+    # 2
+    # 3
+    snake = [
+      %{"x" => 1, "y" => 0},
+      %{"x" => 0, "y" => 0},
+      %{"x" => 0, "y" => 1},
+      %{"x" => 1, "y" => 1}
+    ]
+
+    food = [
+      %{"x" => 3, "y" => 0}
+    ]
+
+    game = mock_game([], snake, food, {4, 4})
+    field = Field.create_field(game) |> Field.update_field(game)
+    game_with_field = Map.put(game, "field", field)
+    res = Snake.move(game_with_field)
+    assert Map.get(res, "move") != "right"
+  end
+
   def mock_game(
         enemy_snake_bodies,
         my_snake_body \\ [

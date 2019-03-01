@@ -5,17 +5,11 @@ defmodule BattleSnake2019.Facts do
   alias BattleSnake2019.Snake.Body
   alias BattleSnake2019.Islands
 
-  def get_facts(%{"field" => field, "you" => snake} = game) do
+  def get_facts(%{"you" => snake} = game) do
     islands = Islands.discover(game)
-    snake_segment_types = Snake.get_segment_types()
     body_size = Body.get_body_size(snake)
 
-    head = Snake.get_segment_location(field, snake["id"], :head)
-
-    snake_safety = Nodes.calculate_node_safety(field, head, snake_segment_types) - 1
-
-    {no_of_enemy_snakes, enemy_head, enemy_body_difference, largest_body_difference,
-     enemy_head_is_adjacent, no_of_enemy_nearby,
+    {enemy_head, enemy_body_difference, largest_body_difference, enemy_head_is_adjacent,
      enemy_head_distance} = find_enemy_facts(game, islands)
 
     {no_ok_food, no_safe_food, no_all_food, skip_all_food, ok_food_result, safe_food_result,
@@ -23,9 +17,9 @@ defmodule BattleSnake2019.Facts do
 
     {tail, no_tail} = find_tail_facts(game)
 
-    all_food = if no_all_food == 1 and no_tail == 0, do: [tail], else: all_food_result
-    ok_food = if no_ok_food == 1 and no_tail == 0, do: [tail], else: ok_food_result
-    safe_food = if no_safe_food == 1 and no_tail == 0, do: [tail], else: safe_food_result
+    all_food = if no_all_food and !no_tail, do: [tail], else: all_food_result
+    ok_food = if no_ok_food and !no_tail, do: [tail], else: ok_food_result
+    safe_food = if no_safe_food and !no_tail, do: [tail], else: safe_food_result
 
     %{
       health_lost: 100 - snake["health"],
@@ -42,7 +36,6 @@ defmodule BattleSnake2019.Facts do
       safe_food: {safe_food, :short},
       tail: {tail, :short},
       no_tail: no_tail,
-      no_of_enemy_nearby: no_of_enemy_nearby,
       largest_body_difference: largest_body_difference,
       enemy_body_difference: enemy_body_difference,
       enemy_head_distance: enemy_head_distance,
@@ -79,16 +72,10 @@ defmodule BattleSnake2019.Facts do
         end
       )
 
-    skip_all_food = if length(ok_food) > 0 or length(safe_food) > 0, do: 1, else: 0
-    no_all_food = if length(all_food) < 1, do: 1, else: 0
-    no_ok_food = if length(ok_food) < 1, do: 1, else: 0
-    no_safe_food = if length(safe_food) < 1, do: 1, else: 0
-
-    nearest_safe_food =
-      Enum.sort_by(safe_food, fn %{dist: dist} -> dist end, &<=/2)
-      |> Enum.at(0, %{entity: :food})
-
-    nearest_food = Enum.sort_by(ok_food, fn %{dist: dist} -> dist end, &<=/2) |> Enum.at(0, %{})
+    skip_all_food = length(ok_food) > 0 or length(safe_food) > 0
+    no_all_food = length(all_food) < 1
+    no_ok_food = length(ok_food) < 1
+    no_safe_food = length(safe_food) < 1
 
     {no_ok_food, no_safe_food, skip_all_food, no_all_food, ok_food, safe_food, all_food}
   end
@@ -109,16 +96,17 @@ defmodule BattleSnake2019.Facts do
         &<=/2
       )
 
-    no_of_enemy_snakes = length(enemy_snakes)
-
     {enemy_head, enemy_head_distance, enemy_body_size, is_adjacent_enemy} =
-      Enum.filter(enemy_snakes, fn {enemy_head, _, _, _} ->
-        node_is_safe =
-          Nodes.calculate_node_safety(field, enemy_head, [:body]) == 0 and
-            Snake.count_deadly_adjacent_snake_heads(field, enemy_head, snakes, snake["id"]) == 0
+      Enum.filter(
+        enemy_snakes,
+        fn {enemy_head, _head_distance, _body_size, _adjacent_enemy} ->
+          node_is_safe =
+            Nodes.calculate_node_safety(field, enemy_head, [:body]) == 0 and
+              Snake.count_deadly_adjacent_snake_heads(field, enemy_head, snakes, snake["id"]) == 0
 
-        node_is_safe and Islands.is_in_same_island?(islands, enemy_head, snake_head)
-      end)
+          node_is_safe and Islands.is_in_same_island?(islands, enemy_head, snake_head)
+        end
+      )
       |> Enum.at(0, {%{entity: :snake}, 100_000, 0, false})
 
     {_largest_enemy_head, _largest_enemy_distance, largest_enemy_body_size,
@@ -136,28 +124,16 @@ defmodule BattleSnake2019.Facts do
         do: -1,
         else: body_size - largest_enemy_body_size
 
-    enemy_head_is_adjacent = if is_adjacent_enemy, do: 1, else: 0
-
-    no_of_enemy_nearby =
-      Enum.count(
-        enemy_snakes,
-        fn {_enemy_head, enemy_head_distance, _enemy_body_size, _is_adjacent_enemy} ->
-          enemy_head_distance < 4
-        end
-      )
-
-    {no_of_enemy_snakes, enemy_head, enemy_body_difference, largest_body_difference,
-     enemy_head_is_adjacent, no_of_enemy_nearby, enemy_head_distance}
+    {enemy_head, enemy_body_difference, largest_body_difference, is_adjacent_enemy,
+     enemy_head_distance}
   end
 
-  def find_tail_facts(
-        %{"field" => field, "you" => snake, "board" => %{"snakes" => snakes}} = game
-      ) do
+  def find_tail_facts(%{"field" => field, "you" => snake} = game) do
     maybe_tail = Snake.get_segment_location(field, snake["id"], :tail)
 
     tail = if is_nil(maybe_tail), do: Body.get_false_tail(snake, game), else: maybe_tail
 
-    no_tail = if is_nil(tail), do: 1, else: 0
+    no_tail = is_nil(tail)
 
     {tail, no_tail}
   end

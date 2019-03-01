@@ -1,8 +1,6 @@
 defmodule BattleSnake2019.Snake do
-  alias BattleSnake2019.GameServer
   alias BattleSnake2019.Pathsolver
   alias BattleSnake2019.Facts
-  alias BattleSnake2019.Field.Nodes
   alias BattleSnake2019.Rules.Judge
   alias BattleSnake2019.Rules.GoalPolicy
 
@@ -13,7 +11,7 @@ defmodule BattleSnake2019.Snake do
   @valid_moves ["right", "left", "up", "down"]
   @name "Jachtslang"
 
-  def move(%{"game" => %{"id" => game_id}, "you" => snake, "field" => field} = current_game) do
+  def move(%{"you" => snake} = current_game) do
     game_facts = Facts.get_facts(current_game)
 
     {goal_name, _weight} =

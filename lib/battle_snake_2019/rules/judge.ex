@@ -24,16 +24,20 @@ defmodule BattleSnake2019.Rules.Judge do
     change_fn.(weight_so_far, adjustment_value)
   end
 
-  defp find_match(facts, {caveats, result}) do
-    does_match =
-      Enum.all?(caveats, fn
-        {key, comparitor, expectation} ->
-          value = Map.get(facts, key)
-          comparitor.(value, expectation)
-      end)
+  defp reduce_weight({:boolean, key, change, multiplier}, weight_so_far, facts) do
+    change_fn = Function.capture(__MODULE__, change, 2)
 
-    if does_match, do: result, else: false
+    adjustment_value =
+      Map.get(facts, key, false)
+      |> convert_boolean_to_number()
+      |> Kernel.*(multiplier)
+
+    change_fn.(weight_so_far, adjustment_value)
   end
+
+  def convert_boolean_to_number(true), do: 1
+  def convert_boolean_to_number(false), do: 0
+  def convert_boolean_to_number(_), do: 0
 
   # Change functions 
   def add(a, b), do: a + b

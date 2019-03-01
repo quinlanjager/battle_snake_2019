@@ -51,17 +51,22 @@ defmodule BattleSnake2019.Facts do
     snake_segment_types = Snake.get_segment_types()
     snake_head = Snake.get_segment_location(field, snake["id"], :head)
 
-    all_food =
+    food =
       Food.get_nodes(field)
       |> Enum.filter(fn food ->
         Snake.count_deadly_adjacent_snake_heads(field, food, snakes, snake["id"]) == 0 and
           Islands.is_in_same_island?(islands, food, snake_head)
       end)
 
-    ok_food =
-      Enum.filter(all_food, fn food ->
+    all_food =
+      Enum.filter(food, fn food ->
         Nodes.calculate_node_safety(field, food, snake_segment_types) < 3 and
           !Nodes.is_node_adjacent_to_wall?(field, food)
+      end)
+
+    ok_food =
+      Enum.filter(all_food, fn food ->
+        !Nodes.is_node_adjacent_to_wall?(field, food)
       end)
 
     safe_food =
